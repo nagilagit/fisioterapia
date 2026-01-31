@@ -1,72 +1,59 @@
-// Menu responsivo
-document.addEventListener('DOMContentLoaded', function () {
-  // Toggle do menu mobile
+document.addEventListener('DOMContentLoaded', () => {
   const menuToggle = document.querySelector('.menu-toggle');
   const navMenu = document.querySelector('.nav-menu');
+  const contactForm = document.getElementById('contactForm');
 
+  // =========================
+  // MENU MOBILE
+  // =========================
   if (menuToggle && navMenu) {
-    menuToggle.addEventListener('click', function () {
-      const isOpen = navMenu.style.display === 'flex';
-
-      navMenu.style.display = isOpen ? 'none' : 'flex';
-
-      // Ajustes para mobile
-      if (window.innerWidth <= 768 && !isOpen) {
-        navMenu.style.flexDirection = 'column';
-        navMenu.style.position = 'absolute';
-        navMenu.style.top = '100%';
-        navMenu.style.left = '0';
-        navMenu.style.width = '100%';
-        navMenu.style.backgroundColor = '#fff';
-        navMenu.style.padding = '20px';
-        navMenu.style.boxShadow = '0 10px 20px rgba(0,0,0,0.1)';
-        navMenu.style.gap = '15px';
-        navMenu.style.zIndex = '1000';
-      }
+    menuToggle.addEventListener('click', () => {
+      navMenu.classList.toggle('active');
     });
 
-    // Ajusta o menu ao redimensionar a tela
-    window.addEventListener('resize', function () {
-      if (window.innerWidth > 768) {
-        navMenu.style.display = 'flex';
-        navMenu.style.flexDirection = 'row';
-        navMenu.style.position = 'static';
-        navMenu.style.backgroundColor = 'transparent';
-        navMenu.style.padding = '0';
-        navMenu.style.boxShadow = 'none';
-        navMenu.style.gap = '0';
-      } else {
-        navMenu.style.display = 'none';
-      }
+    // Fecha o menu ao clicar em um link
+    navMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        navMenu.classList.remove('active');
+      });
     });
   }
 
-  // Formulário de contato
-  const contactForm = document.getElementById('contactForm');
-
+  // =========================
+  // FORMULÁRIO DE CONTATO
+  // (ENVIA PARA WHATSAPP)
+  // =========================
   if (contactForm) {
-    contactForm.addEventListener('submit', function (e) {
+    contactForm.addEventListener('submit', (e) => {
       e.preventDefault();
 
-      const name = document.getElementById('name').value.trim();
-      const phone = document.getElementById('phone').value.trim();
-      const message = document.getElementById('message').value.trim();
+      const name = document.getElementById('name')?.value.trim();
+      const phone = document.getElementById('phone')?.value.trim();
+      const message = document.getElementById('message')?.value.trim();
 
       if (!name || !phone) {
-        alert('Por favor, preencha nome e telefone.');
+        alert('Preencha nome e telefone.');
         return;
       }
 
-      alert(`Obrigado, ${name}! Sua mensagem foi recebida. Em breve entraremos em contato.`);
+      const text = `
+Olá! Dr. Nágila
+Meu nome é ${name}
+Telefone: ${phone}
+
+Mensagem:
+${message || 'Gostaria de mais informações.'}
+      `;
+
+      const encodedText = encodeURIComponent(text);
+      const whatsappNumber = '558894407267';
+
+      window.open(
+        `https://wa.me/${whatsappNumber}?text=${encodedText}`,
+        '_blank'
+      );
 
       contactForm.reset();
-
-      // 👉 Se quiser redirecionar para o WhatsApp automaticamente:
-      /*
-      const whatsappMessage = `Olá, meu nome é ${name}. ${message}`;
-      const encodedMessage = encodeURIComponent(whatsappMessage);
-      window.open(`https://wa.me/558894407267?text=${encodedMessage}`, '_blank');
-      */
     });
   }
 });
