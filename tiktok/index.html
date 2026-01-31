@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-br" class="light">
+
+<head>
+
+    <!-- Meta tags básicas -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Título da página -->
+    <title>Nagila Lima | Streamer TikTok</title>
+    <link rel="icon" type="image/png" href="./nagila_logo.png">
+
+    <!-- Favicon simplificado (vazio) -->
+    <link rel="icon" href="data:," />
+
+    <!-- Pré-conexões para otimizar carregamento das fontes Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Fonte do Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet" />
+
+    <!-- Folha de estilos local -->
+    <link rel="stylesheet" href="./style.css" />
+
+    <!-- Script externo com defer para não travar carregamento -->
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js" defer></script>
+</head>
+
+<body>
+    <div class="language-switcher">
+        <button class="lang-btn active" id="portugueseBtn">
+    <img src="https://flagcdn.com/w20/br.png" alt="Bandeira Brasil" width="20" height="15">
+    <span>pt-BR</span>
+  </button>
+        <button class="lang-btn" id="englishBtn">
+    <img src="https://flagcdn.com/w20/us.png" alt="USA Flag" width="20" height="15">
+    <span>en-US</span>
+  </button>
+    </div>
+
+    <main id="container">
+
+        <section id="profile" aria-label="Perfil da Nagila Lima">
+            <img src="./nagila.jpeg" alt="Foto de Nagila Lima, criadora de conteúdo no TikTok" class="profile-img" width="120" height="120" />
+
+            <p><strong>@Nagilalima22</strong></p>
+            <p class="bio">Streamer • Fisioterapeuta • Criadora de Conteúdo</p>
+
+            <div id="switch" role="switch" tabindex="0" aria-checked="false" aria-label="Alternar tema claro/escuro" onclick="toggleMode()" onkeydown="if(event.key === 'Enter' || event.key === ' ') toggleMode()">
+                <span class="switch-button"></span>
+                <span class="switch-track"></span>
+            </div>
+
+            <!-- Contador de Likes -->
+            <div class="like-counter">
+                <button id="likeButton" aria-pressed="false" aria-label="Curtir">
+                    <ion-icon name="heart"></ion-icon>
+                    <span id="likeCount">5.2K</span>
+                </button>
+            </div>
+        </section>
+
+        <nav aria-label="Links principais">
+            <ul>
+                <li>
+                    <a href="https://www.tiktok.com/@nagilalima22" target="_blank" rel="noopener noreferrer">Assistir minhas Lives</a>
+                </li>
+                <li>
+                    <a href="#" onclick="showVideosModal(); return false;">Vídeos Populares</a>
+                </li>
+                <li>
+                    <a href="#" onclick="showJourneyModal(); return false;">Minha Jornada</a>
+                </li>
+                <li class="language-dependent">
+                    <a href="#" id="supportButtonPT" onclick="showPixModal()" class="portuguese-visible">Seja um Apoiador</a>
+                    <a href="#" id="supportButtonEN" onclick="paypalModal()" class="english-visible">Be a Supporter</a>
+                </li>
+                <li>
+                    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=nagilalimanah@gmail.com" target="_blank" rel="noopener noreferrer">Contato Profissional</a>
+                </li>
+            </ul>
+        </nav>
+
+        <section id="social-links" aria-label="Redes sociais">
+            <a href="https://www.instagram.com/nagilalima22/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                <ion-icon name="logo-instagram"></ion-icon>
+            </a>
+            <a href="https://www.tiktok.com/@nagilalima22" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+                <ion-icon name="logo-tiktok"></ion-icon>
+            </a>
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=nagilalimanah@gmail.com" target="_blank" rel="noopener noreferrer" aria-label="Gmail">
+                <ion-icon name="mail-outline"></ion-icon>
+            </a>
+        </section>
+
+        <footer>
+            💖 Conteúdo diário no TikTok! 💖<br /> Live todos os dias às 20h
+        </footer>
+    </main>
+
+    <!-- Modal PIX -->
+    <div id="pixModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="pixModalTitle" aria-describedby="pixModalDesc" tabindex="-1">
+        <div class="modal-content">
+            <button class="close-modal" aria-label="Fechar modal" onclick="hidePixModal()">&times;</button>
+            <h3 id="pixModalTitle">💖 Apoie meu trabalho</h3>
+            <p id="pixModalDesc">Digite o valor (mínimo R$1):</p>
+
+            <div class="value-control">
+                <button class="value-btn minus" aria-label="Diminuir valor" onclick="changeValue(-1)">−</button>
+                <input type="number" id="valor" min="1" step="1" value="5" placeholder="Ex: 10" aria-describedby="pixModalDesc" />
+                <button class="value-btn plus" aria-label="Aumentar valor" onclick="changeValue(1)">+</button>
+            </div>
+
+            <button class="generate-btn" onclick="gerarPix()">Gerar QR Code</button>
+
+            <div id="qrcode" aria-live="polite" aria-atomic="true"></div>
+
+            <div class="qr-code-actions">
+                <button id="copyQRBtn" class="action-btn" disabled aria-disabled="true">
+                    <ion-icon name="copy-outline"></ion-icon> Copiar QR Code
+                </button>
+                <p id="status" aria-live="polite" aria-atomic="true"></p>
+            </div>
+
+            <div class="pix-key">
+                <p>Ou copie a chave PIX:</p>
+                <div class="key-box" tabindex="0" role="textbox" aria-readonly="true">622e3039-f634-4371-8086-66ed54f3f9a9</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Vídeos -->
+    <div class="modamodal" id="videosModalContainer">
+
+        <div id="videosModal" class="modal" role="dialog" aria-modal="true" tabindex="-1">
+            <div class="modal-content videos-content">
+                <h3>🎥 Vídeos Populares<button onclick="fecharmodal()">x</button></h3>
+
+                <div class="video-container-wrapper">
+                    <div class="video-item" data-video-id="7502111719888669958">
+                        <div>Carregando vídeo 1...</div>
+                    </div>
+                    <div class="video-item" data-video-id="7503236531558092087">
+                        <div>Carregando vídeo 2...</div>
+                    </div>
+                    <div class="video-item" data-video-id="7403032047154924805">
+                        <div>Carregando vídeo 3...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+    <!-- Modal PayPal -->
+    <div id="paypalModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="paypalModalTitle" tabindex="-1">
+        <div class="modal-content">
+            <button class="close-modal" aria-label="Close modal" onclick="hidePaypalModal()">&times;</button>
+            <h3 id="paypalModalTitle">💖 Support my work via PayPal</h3>
+
+            <div class="paypal-donation">
+                <p class="donation-text">One-time donation:</p>
+
+                <div class="value-control">
+                    <button class="value-btn minus" aria-label="Decrease amount" onclick="changePaypalValue(-1)">−</button>
+                    <input type="number" id="paypalValue" min="2" step="5" value="5" aria-label="Donation amount">
+                    <button class="value-btn plus" aria-label="Increase amount" onclick="changePaypalValue(5)">+</button>
+                </div>
+
+                <form action="https://www.paypal.com/donate" method="post" target="_blank">
+                    <input type="hidden" name="business" value="nagilalimanah@gmail.com">
+                    <input type="hidden" name="currency_code" value="BRL">
+                    <input type="hidden" name="amount" id="paypalAmount" value="10">
+                    <button type="submit" class="donate-btn">
+                    <ion-icon name="logo-paypal"></ion-icon> Donate via PayPal
+                </button>
+                </form>
+
+                <p class="donation-note">* You will be redirected to PayPal's secure website</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Minha Jornada -->
+    <div id="journeyModal" class="modal" style="display:none;">
+        <div class="modal-content" style="max-width:600px;">
+            <button class="close-modal" onclick="hideJourneyModal()">&times;</button>
+            <h3>🌟 Minha Jornada</h3>
+            <div class="text-content">
+                <p>No TikTok, eu crio vídeos sobre diversos temas, mas meu foco principal é fazer lives para alegrar as pessoas, trazer energia positiva e diversão para o dia a dia.</p>
+                <p>Gosto de usar essa plataforma para conectar com o público de forma autêntica e leve, sempre buscando espalhar boas vibrações.</p>
+                <br>
+                <p>Além do TikTok, sou fisioterapeuta e adoro estudar para me aprimorar tanto na minha profissão quanto em outras áreas da vida.</p>
+                <p>Acho que o aprendizado constante é essencial para crescer e ajudar melhor quem precisa.</p>
+
+                <!-- Cole aqui todo o texto que você quer mostrar -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Ionicons -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+    <script src="./script.js" defer></script>
+
+</body>
+
+</html>
