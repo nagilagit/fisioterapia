@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       const text = `
-Olá! Dr. Nágila
+Olá, Dr. Nágila
 Meu nome é ${name}
 Telefone: ${phone}
 
