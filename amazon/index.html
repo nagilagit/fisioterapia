@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  
+  <!-- SEO e Meta Tags -->
+  <title>Indicações da Nagila | Produtos Testados na Amazon</title>
+  <meta name="description" content="Siga as indicações da Nagila! Produtos testados, aprovados e com desconto na Amazon. Ofertas reais para você economizar.">
+  <meta name="keywords" content="indicações, Amazon, produtos baratos, ofertas, TikTok, dicas de compra, Nagila Lima">
+  <meta name="author" content="Indicações da Nagila">
+  
+  <!-- Open Graph para compartilhamento -->
+  <meta property="og:title" content="Indicações da Nagila | Produtos Testados na Amazon">
+  <meta property="og:description" content="As melhores indicações de produtos da Amazon testados por mim!">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://seusite.com/thumbnail.jpg">
+  <meta property="og:url" content="https://seusite.com">
+  
+  <!-- Twitter Cards -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Indicações da Nagila">
+  <meta name="twitter:description" content="Produtos testados e aprovados pela Nagila">
+  <meta name="twitter:image" content="https://seusite.com/thumbnail.jpg">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="https://www.amazon.com/favicon.ico">
+  
+  <!-- Font Awesome para ícones -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Scripts -->
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <!-- Header com perfil da TikToker -->
+  <header class="site-header">
+    <div class="header-top">
+      <div class="profile-section">
+        <div class="profile-image">
+          <img src="nagila.jpeg" 
+               alt="Nágila">
+        </div>
+        <div class="profile-info">
+          <h1 class="tiktoker-name"></h1>
+          <p class="profile-bio">Especialista em encontrar os melhores produtos da Amazon! 🛍️</p>
+          <div class="social-links">
+            <a href="https://tiktok.com/@nagilalima22" class="social-btn tiktok" target="_blank">
+              <i class="fab fa-tiktok"></i> Seguir no TikTok
+            </a>
+            <a href="https://instagram.com/nagilalima22" class="social-btn instagram" target="_blank">
+              <i class="fab fa-instagram"></i> Instagram
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- CTA Destaque -->
+      <div class="header-cta">
+        <div class="cta-badge">
+          <i class="fas fa-bolt"></i>
+          OFERTAS DO DIA
+        </div>
+        <h2>Produtos com até 70% OFF!</h2>
+        <p>Indicações exclusivas com cupons de desconto</p>
+      </div>
+    </div>
+    
+    <!-- Barra de busca e filtros -->
+    <div class="search-filter-section">
+      <div class="search-container">
+        <i class="fas fa-search"></i>
+        <input type="text" 
+               id="search-input" 
+               placeholder="Buscar produtos... (ex: 'cadeira gamer', 'fone bluetooth')"
+               aria-label="Buscar produtos">
+        <button id="search-btn" aria-label="Buscar">
+          <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+      
+      <!-- Filtros rápidos -->
+      <div class="quick-filters">
+        <button class="filter-btn active" data-filter="all">
+          <i class="fas fa-star"></i> Todos
+        </button>
+        <button class="filter-btn" data-filter="destaque">
+          <i class="fas fa-fire"></i> Em Alta
+        </button>
+        <button class="filter-btn" data-filter="promocao">
+          <i class="fas fa-percentage"></i> Promoções
+        </button>
+        <button class="filter-btn" data-filter="frete_gratis">
+          <i class="fas fa-shipping-fast"></i> Frete Grátis
+        </button>
+        <button class="filter-btn" data-filter="novidade">
+          <i class="fas fa-rocket"></i> Novidades
+        </button>
+      </div>
+    </div>
+    
+    <!-- Categorias -->
+    <nav class="categories-nav" aria-label="Categorias de produtos">
+      <div class="categories-container">
+        <button class="category-btn active" data-category="all">
+          <i class="fas fa-th-large"></i> Todos
+        </button>
+        <button class="category-btn" data-category="eletronicos">
+          <i class="fas fa-laptop"></i> Eletrônicos
+        </button>
+        <button class="category-btn" data-category="beleza">
+          <i class="fas fa-spa"></i> Beleza
+        </button>
+        <button class="category-btn" data-category="casa">
+          <i class="fas fa-home"></i> Casa
+        </button>
+        <button class="category-btn" data-category="cozinha">
+          <i class="fas fa-utensils"></i> Cozinha
+        </button>
+        <button class="category-btn" data-category="fitness">
+          <i class="fas fa-dumbbell"></i> Fitness
+        </button>
+        <button class="category-btn" data-category="gamer">
+          <i class="fas fa-gamepad"></i> Gamer
+        </button>
+        <button class="category-btn" data-category="pet">
+          <i class="fas fa-paw"></i> Pet
+        </button>
+        <button class="category-btn" data-category="outros">
+          <i class="fas fa-ellipsis-h"></i> Outros
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Conteúdo Principal -->
+  <main class="main-content">
+    <!-- Banner de Destaque -->
+    <section class="featured-banner">
+      <div class="banner-content">
+        <h2><i class="fas fa-crown"></i> INDICAÇÃO DA SEMANA</h2>
+        <p class="banner-title">Smartwatch com 50% OFF</p>
+        <p class="banner-desc">Monitor de saúde + notificações + resistente à água</p>
+        <a href="#destaque-semana" class="banner-btn">
+          Ver Oferta <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+      <div class="banner-badge">
+        <span class="discount-badge">-50%</span>
+        <span class="rating-badge">⭐ 4.8</span>
+      </div>
+    </section>
+
+    <!-- Contador de Produtos -->
+    <div class="products-counter">
+      <span id="products-count">0</span> produtos encontrados
+      <button id="sort-btn" class="sort-toggle">
+        <i class="fas fa-sort-amount-down"></i> Ordenar por
+      </button>
+    </div>
+
+    <!-- Dropdown de Ordenação (oculto por padrão) -->
+    <div class="sort-dropdown" id="sort-dropdown">
+      <button class="sort-option" data-sort="relevancia">Mais Relevantes</button>
+      <button class="sort-option" data-sort="preco_menor">Menor Preço</button>
+      <button class="sort-option" data-sort="preco_maior">Maior Preço</button>
+      <button class="sort-option" data-sort="avaliacao">Melhor Avaliação</button>
+      <button class="sort-option" data-sort="novidade">Mais Novos</button>
+    </div>
+
+    <!-- Grid de Produtos -->
+    <section class="products-grid" id="products-container">
+      <!-- Produtos serão carregados via JavaScript -->
+    </section>
+
+    <!-- Produto em Destaque da Semana -->
+    <section class="weekly-featured" id="destaque-semana">
+      <div class="section-header">
+        <h2><i class="fas fa-gem"></i> DESTAQUE DA SEMANA</h2>
+        <p>Produto mais amado pelos seguidores</p>
+      </div>
+      <div class="featured-product">
+        <div class="featured-image">
+          <img src="https://m.media-amazon.com/images/I/71S4sIPFvBL._AC_SL1500_.jpg" 
+               alt="Smartwatch Esportivo" loading="lazy">
+          <div class="featured-badges">
+            <span class="badge discount">-50%</span>
+            <span class="badge bestseller">Mais Vendido</span>
+          </div>
+        </div>
+        <div class="featured-details">
+          <h3>Smartwatch Esportivo GPS</h3>
+          <div class="rating">
+            <div class="stars">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star-half-alt"></i>
+              <span>4.7 (2.4k avaliações)</span>
+            </div>
+          </div>
+          <p class="price">
+            <span class="old-price">R$ 499,90</span>
+            <span class="current-price">R$ 249,90</span>
+            <span class="installment">ou 12x de R$ 23,90</span>
+          </p>
+          <ul class="features">
+            <li><i class="fas fa-check"></i> Monitor cardíaco 24h</li>
+            <li><i class="fas fa-check"></i> GPS integrado</li>
+            <li><i class="fas fa-check"></i> Resistente à água</li>
+            <li><i class="fas fa-check"></i> Bateria 7 dias</li>
+          </ul>
+          <div class="featured-actions">
+            <a href="https://www.amazon.com.br/dp/B08X6C6XJ6?tag=seutag-20" 
+               class="buy-btn" 
+               target="_blank"
+               rel="noopener noreferrer nofollow">
+              <i class="fas fa-bolt"></i> COMPRAR AGORA
+            </a>
+            <button class="wishlist-btn">
+              <i class="far fa-heart"></i> Favoritar
+            </button>
+          </div>
+          <p class="tiktoker-note">
+            <i class="fas fa-quote-left"></i>
+            "Uso há 3 meses e AMO! A bateria dura uma semana e o GPS é super preciso para corridas."
+            <span class="author">- Nagila Lima</span>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="newsletter-section">
+      <div class="newsletter-content">
+        <i class="fas fa-gift newsletter-icon"></i>
+        <h2>Quer receber as melhores ofertas?</h2>
+        <p>Cadastre-se e seja o primeiro a saber das promoções que eu indico!</p>
+        <form id="newsletter-form" class="newsletter-form">
+          <input type="email" 
+                 placeholder="seu@email.com" 
+                 required
+                 aria-label="Seu email para newsletter">
+          <button type="submit">
+            <i class="fas fa-paper-plane"></i> Cadastrar
+          </button>
+        </form>
+        <p class="newsletter-note">
+          <i class="fas fa-lock"></i> Não enviamos spam. Você pode cancelar a qualquer momento.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <h3>Indicações da <span class="highlight">Nagila</span></h3>
+        <p>As melhores indicações de produtos da Amazon</p>
+        <div class="footer-social">
+          <a href="https://tiktok.com/@nagilalima22" aria-label="TikTok">
+            <i class="fab fa-tiktok"></i>
+          </a>
+          <a href="https://instagram.com/nagilalima22" aria-label="Instagram">
+            <i class="fab fa-instagram"></i>
+          </a>
+          <a href="https://youtube.com/@seucanal" aria-label="YouTube">
+            <i class="fab fa-youtube"></i>
+          </a>
+          <a href="mailto:contato@seudominio.com" aria-label="Email">
+            <i class="fas fa-envelope"></i>
+          </a>
+        </div>
+      </div>
+      
+      <div class="footer-links">
+        <div class="link-column">
+          <h4>Navegação</h4>
+          <a href="#destaque-semana">Destaque da Semana</a>
+          <a href="#" class="filter-btn" data-filter="promocao">Promoções</a>
+          <a href="#" class="filter-btn" data-filter="novidade">Novidades</a>
+          <a href="#">Todos os Produtos</a>
+        </div>
+        
+        <div class="link-column">
+          <h4>Institucional</h4>
+          <a href="/sobre.html">Sobre Mim</a>
+          <a href="/contato.html">Contato</a>
+          <a href="/parcerias.html">Parcerias</a>
+        </div>
+        
+        <div class="link-column">
+          <h4>Legal</h4>
+          <a href="/privacidade.html">Política de Privacidade</a>
+          <a href="/termos.html">Termos de Uso</a>
+          <a href="/afiliados.html">Política de Afiliados</a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <div class="disclaimer">
+        <p>
+          <strong>Aviso Importante:</strong> Este site faz parte do Programa de Associados da Amazon. 
+          Como afiliada, eu ganho por compras qualificadas. Os preços podem variar e o estoque é limitado.
+        </p>
+      </div>
+      
+      <div class="copyright">
+        <p>
+          &copy; <span id="current-year"></span> Indicações da Nagila. 
+          Todos os direitos reservados.
+        </p>
+        <p class="made-with">
+          Feito com <i class="fas fa-heart"></i> para você economizar
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Botão Voltar ao Topo -->
+  <button id="back-to-top" aria-label="Voltar ao topo">
+    <i class="fas fa-chevron-up"></i>
+  </button>
+
+  <!-- Modal de Cupom (aparece ocasionalmente) -->
+  <div class="coupon-modal" id="coupon-modal">
+    <div class="coupon-content">
+      <button class="close-coupon" id="close-coupon">&times;</button>
+      <div class="coupon-header">
+        <i class="fas fa-tag"></i>
+        <h3>CUPOM EXCLUSIVO!</h3>
+      </div>
+      <div class="coupon-code">
+        <span id="coupon-text">TIKTOK10</span>
+        <button id="copy-coupon">
+          <i class="far fa-copy"></i> Copiar
+        </button>
+      </div>
+      <p>Use no checkout da Amazon para 10% de desconto em produtos selecionados!</p>
+      <p class="coupon-expiry">Válido por 24 horas</p>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    // Ano atual no footer
+    document.getElementById('current-year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
