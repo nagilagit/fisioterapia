@@ -1,3 +1,4 @@
+
 /* =========================
    Variáveis Globais (cores, imagens, etc)
    ========================= */
@@ -12,6 +13,7 @@
     --highlight-color: rgba(255, 105, 180, 0.3);
     --icon-hover: rgba(255, 105, 180, 0.2);
     --pink-accent: #ff69b4;
+    --live-red: #ff003c;
 }
 
 .light {
@@ -54,12 +56,16 @@ body {
 
 
 /* =========================
-   Perfil
+   Perfil & Efeito Live
    ========================= */
 
 #profile {
     text-align: center;
     padding: 24px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 #profile img {
@@ -69,7 +75,8 @@ body {
     border: 3px solid var(--pink-accent);
     object-fit: cover;
     transition: border 0.1s ease;
-    box-shadow: 0 0 20px rgba(255, 105, 180, 0.5);
+    /* Animação que faz a borda da foto piscar simulando a Live */
+    animation: live-pulse 1.5s infinite ease-in-out;
 }
 
 #profile p {
@@ -82,6 +89,32 @@ body {
     font-size: 14px;
     opacity: 0.8;
     margin-top: 4px;
+}
+
+/* Badge "LIVE" piscando logo abaixo da foto (Adicione uma tag <span class="live-badge">LIVE</span> se quiser usar) */
+.live-badge {
+    background-color: var(--live-red);
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-top: -10px;
+    z-index: 2;
+    letter-spacing: 1px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    animation: blink 1.2s infinite;
+    box-shadow: 0 0 10px rgba(255, 0, 60, 0.6);
+}
+
+.live-badge::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    background-color: white;
+    border-radius: 50%;
 }
 
 
@@ -129,6 +162,30 @@ body {
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     transition: background 0.1s ease, border 0.1s ease;
+}
+
+.switch-button {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    background: white var(--switch-bg-url) no-repeat center;
+    border: none;
+    border-radius: 50%;
+    z-index: 1;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    transition: transform 0.2s ease, background 0.2s ease;
+    animation: slide-out 0.2s forwards;
+    pointer-events: none;
+}
+
+.light .switch-button {
+    animation: slide-in 0.2s forwards;
+}
+
+#switch:hover .switch-button {
+    outline: 8px solid var(--highlight-color);
 }
 
 
@@ -213,58 +270,58 @@ footer {
 
 
 /* =========================
-   Animações do Switch
+   Animações Globais
    ========================= */
 
 @keyframes slide-in {
-    from {
-        left: 0;
-    }
-    to {
-        left: 50%;
-    }
+    from { left: 0; }
+    to { left: 50%; }
 }
 
 @keyframes slide-out {
+    from { left: 50%; }
+    to { left: 0; }
+}
+
+/* Pulsação de Live na foto de perfil */
+@keyframes live-pulse {
+    0% {
+        border-color: var(--pink-accent);
+        box-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+    }
+    50% {
+        border-color: var(--live-red);
+        box-shadow: 0 0 25px rgba(255, 0, 60, 0.8);
+    }
+    100% {
+        border-color: var(--pink-accent);
+        box-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+    }
+}
+
+/* Pisca-pisca da badge de texto */
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes modalFadeIn {
     from {
-        left: 50%;
+        opacity: 0;
+        transform: translateY(-20px);
     }
     to {
-        left: 0;
-    }
-}
-
-
-/* =========================
-   Responsividade
-   ========================= */
-
-@media (min-width: 700px) {
-     :root {
-        --bg-image: url('./assets/bg-desktop.jpg');
-    }
-    .light {
-        --bg-image: url('./assets/bg-desktop-light.jpg');
-    }
-}
-
-@media (max-width: 400px) {
-    #container {
-        margin: 32px auto 0;
-    }
-    #profile img {
-        width: 100px;
-        height: 100px;
-    }
-    ul li a {
-        padding: 14px 20px;
-        font-size: 14px;
-    }
-    #social-links {
-        font-size: 24px;
-    }
-    #social-links a {
-        padding: 14px;
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
@@ -316,19 +373,9 @@ footer {
     font-size: 14px;
 }
 
-@keyframes pulse {
-    0%,
-    100% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.3);
-    }
-}
-
 
 /* =========================
-   Modal Base
+   Modais (Geral, Pix e Vídeos)
    ========================= */
 
 .modal {
@@ -357,17 +404,6 @@ footer {
     -webkit-backdrop-filter: blur(10px);
     box-shadow: 0 0 25px rgba(255, 105, 180, 0.3);
     animation: modalFadeIn 0.1s ease;
-}
-
-@keyframes modalFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
 .close-modal {
@@ -432,799 +468,6 @@ footer {
     transform: translateY(-2px);
 }
 
-
-/* =========================
-   QR Code
-   ========================= */
-
-#qrcode {
-    margin: 15px auto;
-    padding: 10px;
-    background: white;
-    border-radius: 10px;
-    width: 180px;
-    height: 180px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#qrcode img {
-    max-width: 100%;
-    max-height: 100%;
-}
-
-#status {
-    text-align: center;
-    margin-top: 10px;
-    font-size: 0.9rem;
-    color: var(--pink-accent);
-}
-
-
-/* =========================
-   Pix Key Box
-   ========================= */
-
-.pix-key {
-    margin-top: 20px;
-    text-align: center;
-}
-
-.key-box {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid var(--pink-accent);
-    border-radius: 8px;
-    padding: 10px;
-    margin-top: 10px;
-    font-family: monospace;
-    word-break: break-all;
-    cursor: pointer;
-    transition: all 0.1s;
-}
-
-.key-box:hover {
-    background: rgba(255, 105, 180, 0.2);
-}
-
-
-/* =========================
-   Controle de Valor (input + botões)
-   ========================= */
-
-.value-control {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 15px 0;
-    gap: 5px;
-}
-
-.value-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--pink-accent);
-    color: white;
-    border: none;
-    font-size: 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.1s ease;
-    user-select: none;
-}
-
-.value-btn:hover {
-    transform: scale(1.1);
-    background: #ff4785;
-    box-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
-}
-
-.value-btn:active {
-    transform: scale(0.95);
-}
-
-.value-btn.minus {
-    padding-bottom: 5px;
-}
-
-.value-btn.plus {
-    padding-bottom: 2px;
-}
-
-.value-control input[type="number"] {
-    width: 80px;
-    font-weight: bold;
-    font-size: 1.2rem;
-    padding: 8px;
-    border-radius: 8px;
-    margin: 0;
-}
-
-
-/* Remove setinhas input number */
-
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-input[type=number] {
-    -moz-appearance: textfield;
-}
-
-
-/* =========================
-   Textos e placeholders modal
-   ========================= */
-
-.modal-content,
-.modal-content p,
-.modal-content .pix-key p,
-.modal-content #status {
-    color: white !important;
-}
-
-.modal-content input[type="number"] {
-    color: white !important;
-}
-
-.modal-content input::placeholder {
-    color: rgba(255, 255, 255, 0.6) !important;
-}
-
-
-/* =========================
-   Grid de Vídeos Modal - Estilos Principais
-   ========================= */
-
-.video-grid {
-    display: grid;
-    gap: 20px;
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 10px;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-}
-
-.video-container {
-    width: 100%;
-    aspect-ratio: 9/16;
-    max-height: 80vh;
-    border-radius: 12px;
-    overflow: hidden;
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid var(--pink-accent);
-    position: relative;
-    margin: 0 auto;
-    transition: transform 0.1s ease;
-}
-
-.video-container:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(255, 105, 180, 0.4);
-}
-
-.video-container iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-}
-
-.video-play-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    font-size: 1.2rem;
-    cursor: pointer;
-    z-index: 10;
-    transition: opacity 0.1s;
-}
-
-.video-play-overlay ion-icon {
-    font-size: 3rem;
-    margin-bottom: 10px;
-    color: var(--pink-accent);
-}
-
-.video-play-overlay p {
-    text-align: center;
-    max-width: 80%;
-}
-
-
-/* =========================
-   Responsividade - Vídeos
-   ========================= */
-
-
-/* Tablets e telas médias */
-
-@media (min-width: 769px) and (max-width: 1199px) {
-    .video-grid {
-        grid-template-columns: repeat(2, 1fr);
-        max-width: 800px;
-    }
-    .video-container {
-        max-width: 380px;
-    }
-}
-
-
-/* Desktop grandes */
-
-@media (min-width: 1200px) {
-    .video-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 25px;
-        max-width: 1200px;
-    }
-    .video-container {
-        max-width: 350px;
-    }
-}
-
-
-/* Dispositivos móveis pequenos */
-
-@media (max-width: 480px) {
-    .video-grid {
-        grid-template-columns: 1fr;
-        padding: 5px;
-    }
-    .video-container {
-        max-height: 75vh;
-        max-width: 100%;
-    }
-    .modal-content {
-        margin: 15% auto;
-        padding: 15px;
-        width: 95%;
-    }
-    #qrcode {
-        width: 150px;
-        height: 150px;
-    }
-    .video-play-overlay {
-        font-size: 1rem;
-    }
-    .video-play-overlay ion-icon {
-        font-size: 2.5rem;
-    }
-}
-
-
-/* Dispositivos móveis médios */
-
-@media (min-width: 481px) and (max-width: 768px) {
-    .video-grid {
-        grid-template-columns: 1fr;
-    }
-    .video-container {
-        max-height: 70vh;
-        max-width: 450px;
-    }
-}
-
-
-/*Estilo do overlay de play:*/
-
-.video-play-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    font-size: 1.2rem;
-    cursor: pointer;
-    z-index: 10;
-    transition: opacity 0.1s;
-}
-
-.video-play-overlay ion-icon {
-    font-size: 3rem;
-    margin-bottom: 10px;
-    color: var(--pink-accent);
-}
-
-.video-play-overlay p {
-    text-align: center;
-    max-width: 80%;
-}
-
-
-/* =========================
-   Ajuste ESPECÍFICO para a largura dos vídeos
-   ========================= */
-
-
-/* Container principal do modal de vídeos */
-
-#videosModal .modal-content {
-    width: 90vw;
-    /* Ocupa 90% da largura da tela */
-    max-width: 1200px;
-    /* Máximo de 1200px */
-    padding: 20px;
-}
-
-
-/* Grid que contém os vídeos */
-
-.video-grid {
-    width: 100%;
-    display: grid;
-    gap: 20px;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-}
-
-
-/* Container de cada vídeo individual */
-
-.video-container {
-    width: 100% !important;
-    /* Força largura total */
-    min-width: 300px;
-    /* Largura mínima */
-    aspect-ratio: 9/16;
-    /* Mantém proporção vertical */
-    max-height: 80vh;
-}
-
-
-/* Responsividade para telas menores */
-
-@media (max-width: 768px) {
-    #videosModal .modal-content {
-        width: 95vw;
-        /* Aumenta para 95% em mobile */
-        padding: 10px;
-    }
-    .video-grid {
-        grid-template-columns: 1fr;
-        /* Uma coluna em mobile */
-    }
-    .video-container {
-        min-width: unset;
-        /* Remove largura mínima */
-        width: 100% !important;
-    }
-}
-
-
-/* Ajuste para quando tiver apenas 1 vídeo */
-
-.video-grid:has(.video-container:only-child) {
-    display: flex;
-    justify-content: center;
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-.video-grid:has(.video-container:only-child) .video-container {
-    width: 80% !important;
-    max-width: 500px;
-}
-
-#videosModal .close-modal {
-    display: none;
-}
-
-.video-grid {
-    display: grid;
-    gap: 20px;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    width: 100%;
-    padding: 15px;
-}
-
-.video-wrapper {
-    position: relative;
-    padding-bottom: 177.78%;
-    /* Proporção 16:9 */
-    overflow: hidden;
-    border-radius: 12px;
-    background: #000;
-}
-
-.video-wrapper iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: none;
-}
-
-
-/*teste*/
-
-
-/* Substitua isso: */
-
-#switch button {
-    width: 32px;
-    height: 32px;
-    background: white var(--switch-bg-url) no-repeat center;
-    /* ... */
-}
-
-
-/* Por isso: */
-
-.switch-button {
-    position: absolute;
-    width: 32px;
-    height: 32px;
-    background: white var(--switch-bg-url) no-repeat center;
-    border: none;
-    border-radius: 50%;
-    z-index: 1;
-    top: 50%;
-    left: 0;
-    transform: translateY(-50%);
-    transition: transform 0.2s ease, background 0.2s ease;
-    animation: slide-out 0.2s forwards;
-    pointer-events: none;
-    /* Isso prevente que o span receba foco */
-}
-
-.light .switch-button {
-    animation: slide-in 0.2s forwards;
-}
-
-#switch:hover .switch-button {
-    outline: 8px solid var(--highlight-color);
-}
-
-.video-container {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 9/16;
-    background: #000;
-    border-radius: 8px;
-    overflow: hidden;
-    margin-bottom: 20px;
-}
-
-.tiktok-embed-placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    background: #f8f8f8;
-    color: #333;
-    font-size: 16px;
-    text-align: center;
-    padding: 20px;
-}
-
-.video-container iframe {
-    border: none;
-    width: 100%;
-    height: 100%;
-}
-
-.tiktok-video-container {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 9/16;
-    margin: 15px 0;
-    background: #f1f1f1;
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.video-error {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    padding: 20px;
-    text-align: center;
-}
-
-.video-error a {
-    margin-top: 10px;
-    color: #ff69b4;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-
-/*teste test*/
-
-
-/* Container principal - Grid no desktop */
-
-.video-container-wrapper {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-}
-
-
-/* Versão mobile - transforma em carrossel vertical */
-
-@media (max-width: 768px) {
-    .video-container-wrapper {
-        display: flex;
-        flex-direction: column;
-        overflow-y: auto;
-        scroll-snap-type: y mandatory;
-        height: 70vh;
-        gap: 0;
-    }
-    .video-item {
-        position: relative;
-        width: 100%;
-        aspect-ratio: 9/16;
-        background: #000;
-        border-radius: 12px;
-        overflow: hidden;
-        border: 2px solid var(--pink-accent);
-    }
-    /* Esconde a barra de rolagem */
-    .video-container-wrapper::-webkit-scrollbar {
-        display: none;
-    }
-    /* Indicadores (pontinhos) */
-    .carousel-dots {
-        display: flex;
-        justify-content: center;
-        padding: 15px 0;
-        gap: 10px;
-    }
-    .carousel-dots .dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.3);
-        cursor: pointer;
-    }
-    .carousel-dots .dot.active {
-        background: var(--pink-accent);
-    }
-}
-
-
-/* No desktop, esconde os indicadores */
-
-@media (min-width: 769px) {
-    .carousel-dots {
-        display: none;
-    }
-}
-
-video-item {
-    position: relative;
-    width: 100%;
-    background: #000;
-    border-radius: 12px;
-    overflow: hidden;
-    border: 2px solid var(--pink-accent);
-}
-
-
-/* Ajuste específico para mobile */
-
-@media (max-width: 768px) {
-    .video-item {
-        height: 80vh !important;
-        /* Altura ocupando 80% da tela */
-        min-height: 80vh !important;
-        /* Remove o min-height anterior */
-        margin-bottom: 15px;
-        flex: 0 0 auto;
-        /* Impede que os vídeos se estiquem */
-    }
-    .video-item iframe {
-        height: 100% !important;
-        width: 100% !important;
-    }
-}
-
-
-/* Mantenha o grid para desktop */
-
-@media (min-width: 769px) {
-    .video-container-wrapper {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 20px;
-    }
-    .video-item {
-        aspect-ratio: 9/16;
-        /* Mantém proporção vertical */
-        height: auto;
-    }
-}
-
-.video-loader {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
-    z-index: 10;
-}
-
-.spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid var(--pink-accent);
-    border-radius: 50%;
-    border-top-color: transparent;
-    animation: spin 1s linear infinite;
-    margin-bottom: 10px;
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.video-play-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 5;
-    cursor: pointer;
-}
-
-.video-play-overlay ion-icon {
-    font-size: 3rem;
-    color: var(--pink-accent);
-}
-
-
-/* Estilos para o carrossel mobile */
-
-.video-container-wrapper {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-}
-
-@media (max-width: 768px) {
-    .video-container-wrapper {
-        display: flex;
-        flex-direction: column;
-        overflow-y: auto;
-        scroll-snap-type: y mandatory;
-        height: 70vh;
-        -webkit-overflow-scrolling: touch;
-    }
-    .video-item {
-        scroll-snap-align: start;
-        min-height: 80vh;
-        margin-bottom: 15px;
-    }
-}
-
-
-/* Esconde a barra de rolagem no mobile */
-
-.video-container-wrapper::-webkit-scrollbar {
-    display: none;
-}
-
-
-/* Estilo para os vídeos */
-
-.video-item {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 9/16;
-    background: #000;
-    border-radius: 12px;
-    overflow: hidden;
-    border: 2px solid var(--pink-accent);
-}
-
-.video-item iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-}
-
-
-/* Overlay de play */
-
-.video-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 10;
-    cursor: pointer;
-}
-
-.video-overlay ion-icon {
-    font-size: 3rem;
-    color: var(--pink-accent);
-    transition: transform 0.1s;
-}
-
-.video-overlay:hover ion-icon {
-    transform: scale(1.1);
-}
-
-
-/* Indicadores do carrossel */
-
-.carousel-dots {
-    display: flex;
-    justify-content: center;
-    padding: 15px 0;
-    gap: 10px;
-}
-
-.carousel-dots .dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    cursor: pointer;
-    transition: all 0.1s;
-}
-
-.carousel-dots .dot.active {
-    background: var(--pink-accent);
-    transform: scale(1.2);
-}
-
-
-/* Esconde dots no desktop */
-
-@media (min-width: 769px) {
-    .carousel-dots {
-        display: none;
-    }
-}
-
-
-/* =========================
-   Modal PIX
-   ========================= */
-
 #pixModal {
     position: fixed;
     z-index: 1000;
@@ -1258,26 +501,351 @@ video-item {
     overflow-y: auto;
 }
 
-
-/* Ajustes para o tema light */
-
 .light #pixModal .modal-content {
     background: rgba(255, 105, 180, 0.1);
     border-color: rgba(255, 105, 180, 0.5);
 }
 
+#videosModal .modal-content {
+    width: 90vw;
+    max-width: 1200px;
+    padding: 20px;
+}
 
-/* Responsividade */
+#videosModal .close-modal {
+    display: none;
+}
 
-@media (max-width: 480px) {
-    #pixModal .modal-content {
-        padding: 15px;
-        margin: 10% auto;
-    }
+#journeyModal .modal-content {
+    max-width: 700px;
 }
 
 
-/* Estilo para o conteúdo da jornada */
+/* =========================
+   Grid de Vídeos & Carrossel Mobile
+   ========================= */
+
+.video-container-wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.video-grid {
+    display: grid;
+    gap: 20px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 15px;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
+.video-container {
+    width: 100% !important;
+    min-width: 300px;
+    aspect-ratio: 9/16;
+    max-height: 80vh;
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--pink-accent);
+    position: relative;
+    margin: 0 auto;
+    transition: transform 0.1s ease;
+}
+
+.video-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(255, 105, 180, 0.4);
+}
+
+.video-container iframe,
+.tiktok-video-container iframe {
+    border: none;
+    width: 100%;
+    height: 100%;
+}
+
+.video-wrapper {
+    position: relative;
+    padding-bottom: 177.78%;
+    overflow: hidden;
+    border-radius: 12px;
+    background: #000;
+}
+
+.video-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.video-item {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 9/16;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid var(--pink-accent);
+}
+
+.video-item iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+
+/* Overlays & Componentes dos Vídeos */
+
+.video-play-overlay, .video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 10;
+    transition: opacity 0.1s;
+}
+
+.video-play-overlay ion-icon, .video-overlay ion-icon {
+    font-size: 3rem;
+    margin-bottom: 10px;
+    color: var(--pink-accent);
+    transition: transform 0.1s;
+}
+
+.video-overlay:hover ion-icon {
+    transform: scale(1.1);
+}
+
+.video-play-overlay p {
+    text-align: center;
+    max-width: 80%;
+}
+
+.video-loader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    z-index: 10;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--pink-accent);
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+    margin-bottom: 10px;
+}
+
+.tiktok-embed-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background: #f8f8f8;
+    color: #333;
+    font-size: 16px;
+    text-align: center;
+    padding: 20px;
+}
+
+.tiktok-video-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 9/16;
+    margin: 15px 0;
+    background: #f1f1f1;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.video-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 20px;
+    text-align: center;
+}
+
+.video-error a {
+    margin-top: 10px;
+    color: #ff69b4;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+
+/* Indicadores Carrossel (Dots) */
+
+.carousel-dots {
+    display: flex;
+    justify-content: center;
+    padding: 15px 0;
+    gap: 10px;
+}
+
+.carousel-dots .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: all 0.1s;
+}
+
+.carousel-dots .dot.active {
+    background: var(--pink-accent);
+    transform: scale(1.2);
+}
+
+
+/* =========================
+   QR Code & Box do PIX
+   ========================= */
+
+#qrcode {
+    margin: 15px auto;
+    padding: 10px;
+    background: white;
+    border-radius: 10px;
+    width: 180px;
+    height: 180px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#qrcode img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+#status {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: var(--pink-accent);
+}
+
+.pix-key {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.key-box {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--pink-accent);
+    border-radius: 8px;
+    padding: 10px;
+    margin-top: 10px;
+    font-family: monospace;
+    word-break: break-all;
+    cursor: pointer;
+    transition: all 0.1s;
+}
+
+.key-box:hover {
+    background: rgba(255, 105, 180, 0.2);
+}
+
+.value-control {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 15px 0;
+    gap: 5px;
+}
+
+.value-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--pink-accent);
+    color: white;
+    border: none;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    user-select: none;
+}
+
+.value-btn:hover {
+    transform: scale(1.1);
+    background: #ff4785;
+    box-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+}
+
+.value-btn:active { transform: scale(0.95); }
+.value-btn.minus { padding-bottom: 5px; }
+.value-btn.plus { padding-bottom: 2px; }
+
+.value-control input[type="number"] {
+    width: 80px;
+    font-weight: bold;
+    font-size: 1.2rem;
+    padding: 8px;
+    border-radius: 8px;
+    margin: 0;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] { -moz-appearance: textfield; }
+
+
+/* =========================
+   Textos & Customizações de Modais
+   ========================= */
+
+.modal-content,
+.modal-content p,
+.modal-content .pix-key p,
+.modal-content #status {
+    color: white !important;
+}
+
+.modal-content input[type="number"] {
+    color: white !important;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.modal-content input::placeholder {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
 
 .journey-content {
     padding: 20px;
@@ -1293,14 +861,9 @@ video-item {
 }
 
 
-/* Ajuste para o modal da jornada */
-
-#journeyModal .modal-content {
-    max-width: 700px;
-}
-
-
-/* Estilo dos Botões de Idioma */
+/* =========================
+   Seletor de Idiomas
+   ========================= */
 
 .language-switcher {
     display: flex;
@@ -1331,9 +894,7 @@ video-item {
     justify-content: center;
 }
 
-.lang-btn:hover {
-    background: var(--highlight-color);
-}
+.lang-btn:hover { background: var(--highlight-color); }
 
 .lang-btn.active {
     background: var(--pink-accent);
@@ -1346,29 +907,136 @@ video-item {
     border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-.portuguese-visible {
-    display: block;
+.portuguese-visible { display: block; }
+.english-visible { display: none; }
+
+body.english .portuguese-visible { display: none; }
+body.english .english-visible { display: block; }
+
+#supportButtonPT, #supportButtonEN { text-align: center; }
+
+
+/* =========================
+   Condições Únicas e Regras CSS :has()
+   ========================= */
+
+.video-grid:has(.video-container:only-child) {
+    display: flex;
+    justify-content: center;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
-.english-visible {
-    display: none;
+.video-grid:has(.video-container:only-child) .video-container {
+    width: 80% !important;
+    max-width: 500px;
 }
 
 
-/* Quando o idioma for inglês */
+/* =========================
+   Responsividade & Media Queries
+   ========================= */
 
-body.english .portuguese-visible {
-    display: none;
+@media (min-width: 700px) {
+    :root { --bg-image: url('./assets/bg-desktop.jpg'); }
+    .light { --bg-image: url('./assets/bg-desktop-light.jpg'); }
 }
 
-body.english .english-visible {
-    display: block;
+@media (min-width: 769px) {
+    .carousel-dots { display: none; }
+    .video-container-wrapper {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+    }
+    .video-item {
+        aspect-ratio: 9/16;
+        height: auto;
+    }
 }
 
-#supportButtonPT {
-    text-align: center;
+@media (min-width: 769px) and (max-width: 1199px) {
+    .video-grid {
+        grid-template-columns: repeat(2, 1fr);
+        max-width: 800px;
+    }
+    .video-container { max-width: 380px; }
 }
 
-#supportButtonEN {
-    text-align: center;
+@media (min-width: 1200px) {
+    .video-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 25px;
+        max-width: 1200px;
+    }
+    .video-container { max-width: 350px; }
+}
+
+@media (max-width: 768px) {
+    .video-container-wrapper {
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        scroll-snap-type: y mandatory;
+        height: 70vh;
+        -webkit-overflow-scrolling: touch;
+    }
+    .video-container-wrapper::-webkit-scrollbar { display: none; }
+    .video-item {
+        scroll-snap-align: start;
+        height: 80vh !important;
+        min-height: 80vh !important;
+        margin-bottom: 15px;
+        flex: 0 0 auto;
+    }
+    .video-item iframe {
+        height: 100% !important;
+        width: 100% !important;
+    }
+    #videosModal .modal-content {
+        width: 95vw;
+        padding: 10px;
+    }
+    .video-grid { grid-template-columns: 1fr; }
+    .video-container {
+        min-width: unset;
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .video-grid {
+        grid-template-columns: 1fr;
+        padding: 5px;
+    }
+    .video-container { max-height: 75vh; }
+    .modal-content {
+        margin: 15% auto;
+        padding: 15px;
+        width: 95%;
+    }
+    #qrcode {
+        width: 150px;
+        height: 150px;
+    }
+    .video-play-overlay { font-size: 1rem; }
+    .video-play-overlay ion-icon { font-size: 2.5rem; }
+    #pixModal .modal-content {
+        padding: 15px;
+        margin: 10% auto;
+    }
+}
+
+@media (max-width: 400px) {
+    #container { margin: 32px auto 0; }
+    #profile img {
+        width: 100px;
+        height: 100px;
+    }
+    ul li a {
+        padding: 14px 20px;
+        font-size: 14px;
+    }
+    #social-links { font-size: 24px; }
+    #social-links a { padding: 14px; }
 }
