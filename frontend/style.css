@@ -1,7 +1,3 @@
-/* =========================
-   Variáveis Globais (cores, imagens, etc)
-   ========================= */
-
 :root {
     --text-color: #ffffff;
     --bg-image: url('./assets/bg-mobile.jpg');
@@ -27,11 +23,6 @@
     --pink-accent: #ff1493;
 }
 
-
-/* =========================
-   Reset e base
-   ========================= */
-
 * {
     margin: 0;
     padding: 0;
@@ -52,11 +43,6 @@ body {
     padding: 0 24px;
     color: var(--text-color);
 }
-
-
-/* =========================
-   Perfil & Efeito Live
-   ========================= */
 
 #profile {
     text-align: center;
@@ -113,11 +99,6 @@ body {
     background-color: white;
     border-radius: 50%;
 }
-
-
-/* =========================
-   Switch Tema
-   ========================= */
 
 #switch {
     position: relative;
@@ -185,11 +166,6 @@ body {
     outline: 8px solid var(--highlight-color);
 }
 
-
-/* =========================
-   Lista de Links
-   ========================= */
-
 ul {
     list-style: none;
     display: flex;
@@ -221,11 +197,6 @@ ul li a:hover {
     box-shadow: 0 0 15px var(--pink-accent);
 }
 
-
-/* =========================
-   BOTÃO APOIADOR COM DESTAQUE ELEGANTE
-   ========================= */
-
 .language-dependent a {
     background: linear-gradient(135deg, rgba(255, 105, 180, 0.15), rgba(255, 20, 147, 0.25)) !important;
     backdrop-filter: blur(10px);
@@ -241,7 +212,6 @@ ul li a:hover {
     box-shadow: 0 0 20px rgba(255, 105, 180, 0.05) !important;
 }
 
-/* Gradiente sutil animado no fundo */
 .language-dependent a::before {
     content: '';
     position: absolute;
@@ -264,7 +234,6 @@ ul li a:hover {
     opacity: 1;
 }
 
-/* Efeito de brilho ao passar o mouse */
 .language-dependent a::after {
     content: ' ♡';
     display: inline-block;
@@ -279,7 +248,6 @@ ul li a:hover {
     transform: scale(1.1);
 }
 
-/* Hover - elevação sutil e brilho */
 .language-dependent a:hover {
     transform: translateY(-3px) scale(1.01) !important;
     border-color: #ff1493 !important;
@@ -289,7 +257,6 @@ ul li a:hover {
     background: linear-gradient(135deg, rgba(255, 105, 180, 0.25), rgba(255, 20, 147, 0.35)) !important;
 }
 
-/* Efeito de brilho deslizante */
 .language-dependent a::before {
     content: '';
     position: absolute;
@@ -312,7 +279,6 @@ ul li a:hover {
     left: 100%;
 }
 
-/* Animações do coração */
 @keyframes heartPulse {
     0%, 100% {
         transform: scale(1);
@@ -322,7 +288,6 @@ ul li a:hover {
     }
 }
 
-/* Versão light - mais suave */
 .light .language-dependent a {
     background: linear-gradient(135deg, rgba(255, 105, 180, 0.08), rgba(255, 20, 147, 0.15)) !important;
     border-color: rgba(255, 20, 147, 0.4) !important;
@@ -336,11 +301,6 @@ ul li a:hover {
         0 0 40px rgba(255, 20, 147, 0.05) !important;
     border-color: #ff1493 !important;
 }
-
-
-/* =========================
-   Links Sociais
-   ========================= */
 
 #social-links {
     display: flex;
@@ -368,11 +328,6 @@ ul li a:hover {
     box-shadow: 1px 5px 15px rgba(255, 105, 180, 0.4);
 }
 
-
-/* =========================
-   Rodapé
-   ========================= */
-
 footer {
     padding: 24px 0;
     text-align: center;
@@ -380,11 +335,6 @@ footer {
     opacity: 0.8;
     line-height: 1.6;
 }
-
-
-/* =========================
-   Animações Globais
-   ========================= */
 
 @keyframes slide-in {
     from { left: 0; }
@@ -436,11 +386,6 @@ footer {
     }
 }
 
-
-/* =========================
-   Botão Curtir (Like)
-   ========================= */
-
 .like-counter {
     margin: 16px auto;
     text-align: center;
@@ -483,11 +428,6 @@ footer {
 #likeCount {
     font-size: 14px;
 }
-
-
-/* =========================
-   Modais (Geral, Pix e Vídeos)
-   ========================= */
 
 .modal {
     display: none;
@@ -630,11 +570,6 @@ footer {
 #journeyModal .modal-content {
     max-width: 700px;
 }
-
-
-/* =========================
-   Grid de Vídeos & Carrossel Mobile
-   ========================= */
 
 .video-container-wrapper {
     display: grid;
@@ -830,11 +765,6 @@ footer {
     transform: scale(1.2);
 }
 
-
-/* =========================
-   QR Code & Box do PIX
-   ========================= */
-
 #qrcode {
     margin: 15px auto;
     padding: 10px;
@@ -934,11 +864,6 @@ input::-webkit-inner-spin-button {
 
 input[type=number] { -moz-appearance: textfield; }
 
-
-/* =========================
-   Textos & Customizações de Modais
-   ========================= */
-
 .modal-content,
 .modal-content p,
 .modal-content .pix-key p,
@@ -967,11 +892,6 @@ input[type=number] { -moz-appearance: textfield; }
     margin-bottom: 15px;
     color: var(--text-color);
 }
-
-
-/* =========================
-   Seletor de Idiomas
-   ========================= */
 
 .language-switcher {
     display: flex;
@@ -1023,11 +943,6 @@ body.english .english-visible { display: block; }
 
 #supportButtonPT, #supportButtonEN { text-align: center; }
 
-
-/* =========================
-   Condições Únicas e Regras CSS :has()
-   ========================= */
-
 .video-grid:has(.video-container:only-child) {
     display: flex;
     justify-content: center;
@@ -1039,11 +954,6 @@ body.english .english-visible { display: block; }
     width: 80% !important;
     max-width: 500px;
 }
-
-
-/* =========================
-   Responsividade & Media Queries
-   ========================= */
 
 @media (min-width: 700px) {
     :root { --bg-image: url('./assets/bg-desktop.jpg'); }
@@ -1149,12 +1059,6 @@ body.english .english-visible { display: block; }
     #social-links a { padding: 14px; }
 }
 
-
-/* ============================================
-   ========== NOVAS ADIÇÕES ==========
-   ============================================ */
-
-/* ===== CONTADOR DE DOADORES ===== */
 .donor-counter {
     background: var(--surface-color);
     backdrop-filter: blur(8px);
@@ -1203,7 +1107,6 @@ body.english .english-visible { display: block; }
     transition: transform 0.3s ease;
 }
 
-/* ===== ALERTA DE DOAÇÃO AO VIVO (MAIS LONGO) ===== */
 .donation-alert {
     position: fixed;
     bottom: 30px;
@@ -1275,7 +1178,6 @@ body.english .english-visible { display: block; }
     text-transform: none;
 }
 
-/* ===== CAMPO NOME DO DOADOR ===== */
 #pixDonorName, #paypalDonorName {
     width: 100%;
     padding: 12px;
@@ -1291,7 +1193,6 @@ body.english .english-visible { display: block; }
     color: rgba(255,255,255,0.5);
 }
 
-/* ===== STATUS DE PAGAMENTO ===== */
 #pixStatus {
     text-align: center;
     margin-top: 10px;
@@ -1299,7 +1200,6 @@ body.english .english-visible { display: block; }
     color: var(--pink-accent);
 }
 
-/* ===== BOTÃO DE AÇÃO ===== */
 .generate-btn, .donate-btn {
     width: 100%;
     padding: 12px;
@@ -1346,13 +1246,11 @@ body.english .english-visible { display: block; }
     transform: translateY(-2px);
 }
 
-/* ===== CONFETE ===== */
 @keyframes fall {
     0% { transform: translateY(0) rotate(0deg); opacity: 1; }
     100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
 }
 
-/* ===== CONTROLE TTS ===== */
 .tts-control {
     margin: 10px auto;
     text-align: center;
@@ -1379,7 +1277,6 @@ body.english .english-visible { display: block; }
     background: linear-gradient(135deg, #00b09b, #96c93d);
 }
 
-/* ===== RESPONSIVIDADE ===== */
 @media (max-width: 600px) {
     .donor-counter {
         margin: 15px;
@@ -1402,7 +1299,6 @@ body.english .english-visible { display: block; }
     }
 }
 
-/* ===== CONTROLE DE VISIBILIDADE POR IDIOMA ===== */
 .portuguese-visible {
     display: block !important;
 }
@@ -1440,7 +1336,6 @@ body.english .modal .english-visible {
     display: inline-block !important;
 }
 
-/* ===== RANKING ===== */
 .ranking-item {
     display: flex;
     justify-content: space-between;
@@ -1470,7 +1365,6 @@ body.english .modal .english-visible {
     color: #ffd700;
 }
 
-/* Medalhas para top 3 */
 .ranking-item.top1 { border-left-color: #ffd700; }
 .ranking-item.top1 .ranking-position { color: #ffd700; }
 .ranking-item.top2 { border-left-color: #c0c0c0; }
@@ -1478,7 +1372,6 @@ body.english .modal .english-visible {
 .ranking-item.top3 { border-left-color: #cd7f32; }
 .ranking-item.top3 .ranking-position { color: #cd7f32; }
 
-/* ===== NOTA DO PAYPAL ===== */
 .donation-note {
     font-size: 11px;
     opacity: 0.7;

@@ -1,4 +1,3 @@
-// Variáveis globais
 const BACKEND_URL = 'https://api.nagilalima.site';
 let currentLanguage = 'portuguese';
 let socket = null;
@@ -6,16 +5,13 @@ let donorCount = 0;
 let currentPaymentId = null;
 let paymentCheckInterval = null;
 
-// =========================
-// TTS - TEXT TO SPEECH (CORRIGIDO E MELHORADO)
-// =========================
 let ttsEnabled = true;
 let currentUtterance = null;
 let messageQueue = [];
 let isSpeaking = false;
 
 const ttsConfig = {
-    rate: 1.03,
+    rate: 1.05,
     pitch: 1.05,
     volume: 0.9,
     voice: null
@@ -23,17 +19,14 @@ const ttsConfig = {
 
 function initTTSVoices() {
     if (!('speechSynthesis' in window)) {
-        console.warn('⚠️ Navegador não suporta TTS');
         ttsEnabled = false;
         return;
     }
 
     const loadVoices = () => {
         const voices = window.speechSynthesis.getVoices();
-        console.log('🎤 Vozes disponíveis:', voices.map(v => v.name));
         
         if (voices.length === 0) {
-            console.log('⏳ Nenhuma voz encontrada, tentando novamente...');
             setTimeout(loadVoices, 500);
             return;
         }
@@ -43,15 +36,12 @@ function initTTSVoices() {
             voices.find(v => v.lang.startsWith('pt-BR') && v.name.includes('Neural')) ||
             voices.find(v => v.lang.startsWith('pt-BR') && v.name.includes('Google')) ||
             voices.find(v => v.lang.startsWith('pt-BR') && v.name.includes('Heloisa')) ||
-            voices.find(v => v.lang.startsWith('pt-BR') && v.name.includes('Maria')) ||
             voices.find(v => v.lang.startsWith('pt-BR'));
         
         if (portugueseVoice) {
             ttsConfig.voice = portugueseVoice;
-            console.log('✅ Voz selecionada:', portugueseVoice.name);
         } else {
             ttsConfig.voice = voices[0] || null;
-            console.log('⚠️ Usando voz padrão:', ttsConfig.voice?.name || 'Nenhuma');
         }
     };
 
@@ -63,40 +53,20 @@ function initTTSVoices() {
 }
 
 function processMessageQueue() {
-    if (isSpeaking) {
-        console.log('⏳ Já está falando, aguardando...');
-        return;
-    }
-    
-    if (messageQueue.length === 0) {
-        console.log('📭 Fila vazia');
-        return;
-    }
-    
-    if (!ttsEnabled) {
-        console.log('🔇 TTS desligado');
-        messageQueue = [];
-        return;
-    }
+    if (isSpeaking || messageQueue.length === 0 || !ttsEnabled) return;
 
     const nextMessage = messageQueue.shift();
-    console.log('🗣️ Processando mensagem da fila:', nextMessage);
-    
     isSpeaking = true;
 
     const { nome, mensagem, valor, metodo } = nextMessage;
     const valorFormatado = metodo === 'PIX' ? `R$${valor.toFixed(2)}` : `US$${valor.toFixed(2)}`;
     
-    // ===== MENSAGEM MAIS LONGA E DETALHADA =====
     const frasesInicio = [
-        `Nova doação acabou de chegar!`,
-        `Recebemos uma doação incrível!`,
-        `Olha só que legal!`,
-        `Agora agora, uma nova doação!`,
-        `Temos uma nova doação!`,
-        `Pessoal, olha só!`,
-        `Que legal, mais uma doação!`,
-        `Uhuuul! Nova doação!`
+        `Nova doação!`,
+        `Recebemos uma doação!`,
+        `Olha só!`,
+        `Agora agora...`,
+        `Temos uma nova doação!`
     ];
     
     const frasesAgradecimento = [
@@ -104,8 +74,7 @@ function processMessageQueue() {
         `Agradeço demais`,
         `Que incrível`,
         `Fico muito feliz`,
-        `Que gesto lindo`,
-        `Sou muito grata`
+        `Que gesto lindo`
     ];
     
     const randomInicio = frasesInicio[Math.floor(Math.random() * frasesInicio.length)];
@@ -120,16 +89,14 @@ function processMessageQueue() {
     }
     
     if (mensagem && mensagem.trim() !== '') {
-        texto += ` e deixou a seguinte mensagem: ${mensagem}`;
+        texto += ` e disse: ${mensagem}`;
     }
     
     texto += `, ${randomAgradecimento}!`;
     
     if (donorCount > 0 && donorCount % 5 === 0) {
-        texto += ` Já são ${donorCount} doações! Vocês são demais!`;
+        texto += ` Já são ${donorCount} doações!`;
     }
-    
-    console.log('🔊 Falando:', texto);
 
     currentUtterance = new SpeechSynthesisUtterance(texto);
     currentUtterance.lang = 'pt-BR';
@@ -141,15 +108,13 @@ function processMessageQueue() {
         currentUtterance.voice = ttsConfig.voice;
     }
 
-    currentUtterance.onend = function() {
-        console.log('✅ Fala finalizada');
+    currentUtterance.onend = () => {
         isSpeaking = false;
         currentUtterance = null;
         setTimeout(() => processMessageQueue(), 100);
     };
 
-    currentUtterance.onerror = function(event) {
-        console.error('❌ Erro no TTS:', event);
+    currentUtterance.onerror = () => {
         isSpeaking = false;
         currentUtterance = null;
         setTimeout(() => processMessageQueue(), 200);
@@ -157,9 +122,7 @@ function processMessageQueue() {
 
     try {
         window.speechSynthesis.speak(currentUtterance);
-        console.log('🎤 TTS iniciado');
     } catch (error) {
-        console.error('❌ Erro ao iniciar TTS:', error);
         isSpeaking = false;
         currentUtterance = null;
         processMessageQueue();
@@ -167,12 +130,7 @@ function processMessageQueue() {
 }
 
 function speakDonationMessage(nome, mensagem, valor, metodo) {
-    console.log('📨 speakDonationMessage chamado:', { nome, mensagem, valor, metodo });
-    
-    if (!ttsEnabled) {
-        console.log('🔇 TTS desabilitado, ignorando');
-        return;
-    }
+    if (!ttsEnabled) return;
 
     messageQueue.push({ 
         nome: nome || 'Anônimo', 
@@ -181,13 +139,10 @@ function speakDonationMessage(nome, mensagem, valor, metodo) {
         metodo: metodo || 'PIX' 
     });
     
-    console.log(`📥 Mensagem adicionada à fila. Tamanho da fila: ${messageQueue.length}`);
     processMessageQueue();
 }
 
 function speakCustomMessage(texto) {
-    console.log('💬 speakCustomMessage:', texto);
-    
     if (!ttsEnabled) return;
 
     if (currentUtterance) {
@@ -221,12 +176,8 @@ function toggleTTS() {
     }
     
     localStorage.setItem('ttsEnabled', ttsEnabled);
-    console.log(`🔊 TTS ${ttsEnabled ? 'Ligado' : 'Desligado'}`);
 }
 
-// =========================
-// CONEXÃO WEBSOCKET
-// =========================
 function connectWebSocket() {
     socket = io(BACKEND_URL, {
         transports: ['websocket'],
@@ -234,7 +185,6 @@ function connectWebSocket() {
     });
     
     socket.on('connect', () => {
-        console.log('✅ Conectado ao servidor da live!');
         addSystemMessage('🟢 Live conectada - doações em tempo real!');
     });
     
@@ -244,7 +194,6 @@ function connectWebSocket() {
     });
     
     socket.on('nova-doacao', (doacao) => {
-        console.log('📡 NOVA DOAÇÃO RECEBIDA:', doacao);
         donorCount = doacao.donorCount;
         updateDonorCounter();
         showDonationAlert(doacao.nome, doacao.valor, doacao.metodo, doacao.mensagem);
@@ -257,7 +206,6 @@ function connectWebSocket() {
     });
     
     socket.on('disconnect', () => {
-        console.log('⚠️ Conexão perdida. Reconectando...');
         addSystemMessage('🔴 Reconectando à live...');
         setTimeout(() => connectWebSocket(), 3000);
     });
@@ -350,9 +298,6 @@ function addSystemMessage(msg) {
     setTimeout(() => alerta.remove(), 4000);
 }
 
-// =========================
-// MODO CLARO/ESCURO
-// =========================
 function toggleMode() {
     const html = document.documentElement;
     html.classList.toggle('light');
@@ -362,17 +307,14 @@ function toggleMode() {
     if (html.classList.contains('light')) {
         img.style.borderColor = '#FF1493';
         img.style.boxShadow = '0 0 20px rgba(255, 20, 147, 0.5)';
-        img.src = './nagila.jpeg';
+        img.src = './frontend/nagila.jpeg';
     } else {
         img.style.borderColor = '#FF69B4';
         img.style.boxShadow = '0 0 20px rgba(255, 105, 180, 0.5)';
-        img.src = './nagila2.jpg';
+        img.src = './frontend/nagila2.jpg';
     }
 }
 
-// =========================
-// CONTADOR DE LIKES
-// =========================
 function setupLikeButton() {
     const likeButton = document.getElementById('likeButton');
     const likeCount = document.getElementById('likeCount');
@@ -395,9 +337,6 @@ function setupLikeButton() {
     }
 }
 
-// =========================
-// FUNÇÕES PIX
-// =========================
 function showPixModal() {
     const modal = document.getElementById('pixModal');
     if (modal) modal.style.display = 'flex';
@@ -513,7 +452,6 @@ async function gerarPix() {
         }
         
     } catch (error) {
-        console.error("Erro ao criar pagamento:", error);
         statusEl.textContent = `❌ Erro: ${error.message}`;
         statusEl.style.color = "#ff4444";
         qrcodeDiv.style.display = 'none';
@@ -538,7 +476,7 @@ function copyQRCodeHandler(event) {
     }
 }
 
-async function verificarPagamento(paymentId, valor, nome, mensagem) {
+async function verificarPagamento(paymentId) {
     try {
         const response = await fetch(`${BACKEND_URL}/api/check-payment/${paymentId}`);
         const data = await response.json();
@@ -556,13 +494,10 @@ async function verificarPagamento(paymentId, valor, nome, mensagem) {
             }, 2000);
         }
     } catch (error) {
-        console.log("Verificando pagamento...");
+        // Silently continue checking
     }
 }
 
-// =========================
-// PAYPAL FUNCTIONS
-// =========================
 function showPaypalModal() {
     const modal = document.getElementById('paypalModal');
     if (modal) modal.style.display = 'flex';
@@ -610,9 +545,6 @@ function updatePaypalAmount() {
     }
 }
 
-// =========================
-// MODAL VÍDEOS
-// =========================
 function showVideosModal() {
     const modalContainer = document.getElementById("videosModalContainer");
     if (modalContainer) modalContainer.style.display = "block";
@@ -639,9 +571,6 @@ function loadVideos() {
     });
 }
 
-// =========================
-// MODAL JORNADA
-// =========================
 function showJourneyModal() {
     const modal = document.getElementById("journeyModal");
     if (modal) modal.style.display = 'flex';
@@ -654,9 +583,6 @@ function hideJourneyModal() {
     document.body.style.overflow = 'auto';
 }
 
-// =========================
-// MODAL RANKING
-// =========================
 function showRankingModal() {
     const modal = document.getElementById("rankingModal");
     if (modal) modal.style.display = 'flex';
@@ -698,14 +624,10 @@ async function loadRanking() {
             content.innerHTML = '<p style="text-align:center; opacity:0.7;">📭 Nenhum doador ainda. Seja o primeiro! 💖</p>';
         }
     } catch (error) {
-        console.error('Erro ao carregar ranking:', error);
         content.innerHTML = '<p style="text-align:center; color:#ff4444;">❌ Erro ao carregar ranking</p>';
     }
 }
 
-// =========================
-// IDIOMAS
-// =========================
 const translationsData = {
     portuguese: {
         bio: "Streamer • Fisioterapeuta • Criadora de Conteúdo",
@@ -774,9 +696,6 @@ function loadSavedLanguage() {
     translatePage(savedLang);
 }
 
-// =========================
-// UTILITÁRIOS
-// =========================
 function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
@@ -785,7 +704,6 @@ function escapeHtml(text) {
 
 function copyToClipboard(text) {
     navigator.clipboard.writeText(text).then(() => {
-        console.log('Copiado para clipboard');
         const status = document.getElementById('pixStatus');
         if (status) {
             status.innerHTML = '📋 Código copiado!';
@@ -795,8 +713,7 @@ function copyToClipboard(text) {
                 }
             }, 2000);
         }
-    }).catch(err => {
-        console.error('Erro ao copiar:', err);
+    }).catch(() => {
         const textarea = document.createElement('textarea');
         textarea.value = text;
         document.body.appendChild(textarea);
@@ -806,9 +723,6 @@ function copyToClipboard(text) {
     });
 }
 
-// =========================
-// INICIALIZAÇÃO
-// =========================
 document.addEventListener('DOMContentLoaded', () => {
     setupLikeButton();
     loadSavedLanguage();
@@ -869,7 +783,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     if (paypalForm) {
-        paypalForm.addEventListener('submit', async function(e) {
+        paypalForm.addEventListener('submit', async function() {
             const nome = paypalNameInput?.value.trim() || 'Anonymous';
             const mensagem = paypalMessageInput?.value.trim() || '';
             const valor = parseFloat(paypalValueInput?.value) || 10;
@@ -886,7 +800,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     })
                 });
             } catch (error) {
-                console.log("Webhook simulado - doação PayPal registrada");
+                // Silently continue
             }
         });
     }
