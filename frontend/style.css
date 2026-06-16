@@ -1,10 +1,9 @@
-
 /* =========================
    Variáveis Globais (cores, imagens, etc)
    ========================= */
 
 :root {
-    --text-color: #fff;
+    --text-color: #ffffff;
     --bg-image: url('./assets/bg-mobile.jpg');
     --switch-bg-url: url('./assets/moon-stars.svg');
     --switch-position: left;
@@ -17,7 +16,7 @@
 }
 
 .light {
-    --text-color: #333;
+    --text-color: #090909;
     --bg-image: url('./assets/bg-mobile-light.jpg');
     --switch-bg-url: url('./assets/sun.svg');
     --switch-position: right;
@@ -75,7 +74,6 @@ body {
     border: 3px solid var(--pink-accent);
     object-fit: cover;
     transition: border 0.1s ease;
-    /* Animação que faz a borda da foto piscar simulando a Live */
     animation: live-pulse 1.5s infinite ease-in-out;
 }
 
@@ -91,7 +89,6 @@ body {
     margin-top: 4px;
 }
 
-/* Badge "LIVE" piscando logo abaixo da foto (Adicione uma tag <span class="live-badge">LIVE</span> se quiser usar) */
 .live-badge {
     background-color: var(--live-red);
     color: white;
@@ -226,6 +223,122 @@ ul li a:hover {
 
 
 /* =========================
+   BOTÃO APOIADOR COM DESTAQUE ELEGANTE
+   ========================= */
+
+.language-dependent a {
+    background: linear-gradient(135deg, rgba(255, 105, 180, 0.15), rgba(255, 20, 147, 0.25)) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 2px solid var(--pink-accent) !important;
+    color: var(--text-color) !important;
+    font-weight: 700 !important;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    letter-spacing: 0.5px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 20px rgba(255, 105, 180, 0.05) !important;
+}
+
+/* Gradiente sutil animado no fundo */
+.language-dependent a::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, 
+        rgba(255, 105, 180, 0.1),
+        rgba(255, 20, 147, 0.2),
+        rgba(255, 105, 180, 0.1)
+    );
+    border-radius: 10px;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: -1;
+}
+
+.language-dependent a:hover::before {
+    opacity: 1;
+}
+
+/* Efeito de brilho ao passar o mouse */
+.language-dependent a::after {
+    content: ' ♡';
+    display: inline-block;
+    font-size: 1.1em;
+    transition: all 0.3s ease;
+    color: var(--pink-accent);
+}
+
+.language-dependent a:hover::after {
+    content: ' ❤️';
+    animation: heartPulse 0.8s ease-in-out infinite;
+    transform: scale(1.1);
+}
+
+/* Hover - elevação sutil e brilho */
+.language-dependent a:hover {
+    transform: translateY(-3px) scale(1.01) !important;
+    border-color: #ff1493 !important;
+    box-shadow: 
+        0 8px 25px rgba(255, 20, 147, 0.25),
+        0 0 40px rgba(255, 20, 147, 0.08) !important;
+    background: linear-gradient(135deg, rgba(255, 105, 180, 0.25), rgba(255, 20, 147, 0.35)) !important;
+}
+
+/* Efeito de brilho deslizante */
+.language-dependent a::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+    );
+    transform: skewX(-20deg);
+    transition: left 0.6s ease;
+    pointer-events: none;
+}
+
+.language-dependent a:hover::before {
+    left: 100%;
+}
+
+/* Animações do coração */
+@keyframes heartPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.3);
+    }
+}
+
+/* Versão light - mais suave */
+.light .language-dependent a {
+    background: linear-gradient(135deg, rgba(255, 105, 180, 0.08), rgba(255, 20, 147, 0.15)) !important;
+    border-color: rgba(255, 20, 147, 0.4) !important;
+    color: #1a1a1a !important;
+}
+
+.light .language-dependent a:hover {
+    background: linear-gradient(135deg, rgba(255, 105, 180, 0.18), rgba(255, 20, 147, 0.25)) !important;
+    box-shadow: 
+        0 8px 25px rgba(255, 20, 147, 0.15),
+        0 0 40px rgba(255, 20, 147, 0.05) !important;
+    border-color: #ff1493 !important;
+}
+
+
+/* =========================
    Links Sociais
    ========================= */
 
@@ -283,7 +396,6 @@ footer {
     to { left: 0; }
 }
 
-/* Pulsação de Live na foto de perfil */
 @keyframes live-pulse {
     0% {
         border-color: var(--pink-accent);
@@ -299,7 +411,6 @@ footer {
     }
 }
 
-/* Pisca-pisca da badge de texto */
 @keyframes blink {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.4; }
@@ -600,9 +711,6 @@ footer {
     border: none;
 }
 
-
-/* Overlays & Componentes dos Vídeos */
-
 .video-play-overlay, .video-overlay {
     position: absolute;
     top: 0;
@@ -701,9 +809,6 @@ footer {
     font-weight: bold;
 }
 
-
-/* Indicadores Carrossel (Dots) */
-
 .carousel-dots {
     display: flex;
     justify-content: center;
@@ -769,6 +874,9 @@ footer {
     word-break: break-all;
     cursor: pointer;
     transition: all 0.1s;
+    font-size: 12px;
+    max-height: 80px;
+    overflow-y: auto;
 }
 
 .key-box:hover {
@@ -1039,4 +1147,340 @@ body.english .english-visible { display: block; }
     }
     #social-links { font-size: 24px; }
     #social-links a { padding: 14px; }
+}
+
+
+/* ============================================
+   ========== NOVAS ADIÇÕES ==========
+   ============================================ */
+
+/* ===== CONTADOR DE DOADORES ===== */
+.donor-counter {
+    background: var(--surface-color);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--pink-accent);
+    border-radius: 60px;
+    padding: 12px 24px;
+    margin: 20px auto;
+    max-width: 350px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.donor-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.donor-icon {
+    font-size: 28px;
+    animation: donorPulse 1s ease infinite;
+}
+
+@keyframes donorPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.donor-label {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.donor-number {
+    font-size: 28px;
+    font-weight: bold;
+    color: #ff69b4;
+    background: rgba(255, 105, 180, 0.2);
+    padding: 4px 12px;
+    border-radius: 40px;
+    min-width: 60px;
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+/* ===== ALERTA DE DOAÇÃO AO VIVO (MAIS LONGO) ===== */
+.donation-alert {
+    position: fixed;
+    bottom: 30px;
+    right: 20px;
+    background: linear-gradient(135deg, #ff69b4, #ff1493);
+    color: white;
+    padding: 20px 25px;
+    border-radius: 60px;
+    animation: slideInRight 0.4s ease, fadeOut 0.5s ease 8s forwards;
+    z-index: 10000;
+    box-shadow: 0 8px 30px rgba(255, 20, 147, 0.5);
+    font-weight: bold;
+    max-width: 400px;
+    min-width: 280px;
+}
+
+@keyframes slideInRight {
+    from { transform: translateX(120%) scale(0.8); opacity: 0; }
+    to { transform: translateX(0) scale(1); opacity: 1; }
+}
+
+@keyframes fadeOut {
+    to { opacity: 0; visibility: hidden; transform: scale(0.9); }
+}
+
+.donation-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.donation-content .heart-icon {
+    font-size: 28px;
+    animation: heartBeat 0.6s ease infinite;
+}
+
+@keyframes heartBeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+}
+
+.donor-name {
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 16px;
+}
+
+.donation-amount {
+    background: rgba(255,255,255,0.2);
+    padding: 4px 14px;
+    border-radius: 40px;
+    font-size: 15px;
+    display: inline-block;
+}
+
+.donation-message {
+    font-size: 14px;
+    font-style: italic;
+    background: rgba(255,255,255,0.15);
+    padding: 8px 14px;
+    border-radius: 20px;
+    margin-top: 8px;
+    max-width: 300px;
+    word-wrap: break-word;
+    font-weight: normal;
+    letter-spacing: normal;
+    text-transform: none;
+}
+
+/* ===== CAMPO NOME DO DOADOR ===== */
+#pixDonorName, #paypalDonorName {
+    width: 100%;
+    padding: 12px;
+    margin: 15px 0;
+    border: 1px solid var(--pink-accent);
+    border-radius: 8px;
+    background: rgba(255,255,255,0.1);
+    color: var(--text-color);
+    font-size: 14px;
+}
+
+#pixDonorName::placeholder, #paypalDonorName::placeholder {
+    color: rgba(255,255,255,0.5);
+}
+
+/* ===== STATUS DE PAGAMENTO ===== */
+#pixStatus {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: var(--pink-accent);
+}
+
+/* ===== BOTÃO DE AÇÃO ===== */
+.generate-btn, .donate-btn {
+    width: 100%;
+    padding: 12px;
+    margin: 15px 0;
+    background: var(--pink-accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.1s;
+}
+
+.generate-btn:hover, .donate-btn:hover {
+    background: #ff4785;
+    transform: translateY(-2px);
+}
+
+.action-btn {
+    width: 100%;
+    padding: 10px;
+    background: transparent;
+    border: 1px solid var(--pink-accent);
+    border-radius: 8px;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.1s;
+}
+
+.action-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.action-btn:not(:disabled) {
+    background: var(--pink-accent);
+    color: white;
+    cursor: pointer;
+    opacity: 1;
+}
+
+.action-btn:not(:disabled):hover {
+    background: #ff4785;
+    transform: translateY(-2px);
+}
+
+/* ===== CONFETE ===== */
+@keyframes fall {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+}
+
+/* ===== CONTROLE TTS ===== */
+.tts-control {
+    margin: 10px auto;
+    text-align: center;
+}
+
+.tts-toggle-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    padding: 8px 20px;
+    border-radius: 30px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.tts-toggle-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(102, 126, 234, 0.5);
+}
+
+.tts-toggle-btn.active {
+    background: linear-gradient(135deg, #00b09b, #96c93d);
+}
+
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 600px) {
+    .donor-counter {
+        margin: 15px;
+        padding: 10px 20px;
+        max-width: 280px;
+    }
+    .donor-label { font-size: 12px; }
+    .donor-number { font-size: 22px; }
+    .donor-icon { font-size: 22px; }
+    .donation-alert {
+        left: 20px;
+        right: 20px;
+        max-width: calc(100% - 40px);
+        padding: 12px 18px;
+    }
+    .donation-content { gap: 8px; font-size: 14px; }
+    .donation-message {
+        font-size: 12px;
+        max-width: 200px;
+    }
+}
+
+/* ===== CONTROLE DE VISIBILIDADE POR IDIOMA ===== */
+.portuguese-visible {
+    display: block !important;
+}
+
+.english-visible {
+    display: none !important;
+}
+
+body.english .portuguese-visible {
+    display: none !important;
+}
+
+body.english .english-visible {
+    display: block !important;
+}
+
+.language-dependent {
+    list-style: none;
+}
+
+.language-dependent a {
+    text-align: center;
+}
+
+.modal .portuguese-visible,
+.modal .english-visible {
+    display: inline-block;
+}
+
+body.english .modal .portuguese-visible {
+    display: none !important;
+}
+
+body.english .modal .english-visible {
+    display: inline-block !important;
+}
+
+/* ===== RANKING ===== */
+.ranking-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    margin: 5px 0;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    border-left: 3px solid var(--pink-accent);
+}
+
+.ranking-position {
+    font-weight: bold;
+    color: var(--pink-accent);
+    font-size: 18px;
+    min-width: 30px;
+}
+
+.ranking-name {
+    flex: 1;
+    margin-left: 10px;
+    font-weight: 500;
+}
+
+.ranking-total {
+    font-weight: bold;
+    color: #ffd700;
+}
+
+/* Medalhas para top 3 */
+.ranking-item.top1 { border-left-color: #ffd700; }
+.ranking-item.top1 .ranking-position { color: #ffd700; }
+.ranking-item.top2 { border-left-color: #c0c0c0; }
+.ranking-item.top2 .ranking-position { color: #c0c0c0; }
+.ranking-item.top3 { border-left-color: #cd7f32; }
+.ranking-item.top3 .ranking-position { color: #cd7f32; }
+
+/* ===== NOTA DO PAYPAL ===== */
+.donation-note {
+    font-size: 11px;
+    opacity: 0.7;
+    margin-top: 10px;
 }

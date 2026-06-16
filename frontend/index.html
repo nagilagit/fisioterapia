@@ -6,6 +6,10 @@
     <!-- Meta tags básicas -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Nagila Lima - Streamer e criadora de conteúdo no TikTok. Lives diárias às 20h." />
+    <meta property="og:title" content="Nagila Lima | Streamer TikTok" />
+    <meta property="og:description" content="Conteúdo diário e lives no TikTok!" />
+    <meta property="og:image" content="./nagila_logo.png" />
 
     <!-- Título da página -->
     <title>Nagila Lima | Streamer TikTok</title>
@@ -24,6 +28,9 @@
     <!-- Folha de estilos local -->
     <link rel="stylesheet" href="./style.css" />
 
+    <!-- Socket.io para tempo real -->
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
     <!-- Script externo com defer para não travar carregamento -->
     <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js" defer></script>
 </head>
@@ -31,13 +38,23 @@
 <body>
     <div class="language-switcher">
         <button class="lang-btn active" id="portugueseBtn">
-    <img src="https://flagcdn.com/w20/br.png" alt="Bandeira Brasil" width="20" height="15">
-    <span>pt-BR</span>
-  </button>
+            <img src="https://flagcdn.com/w20/br.png" alt="Bandeira Brasil" width="20" height="15">
+            <span>pt-BR</span>
+        </button>
         <button class="lang-btn" id="englishBtn">
-    <img src="https://flagcdn.com/w20/us.png" alt="USA Flag" width="20" height="15">
-    <span>en-US</span>
-  </button>
+            <img src="https://flagcdn.com/w20/us.png" alt="USA Flag" width="20" height="15">
+            <span>en-US</span>
+        </button>
+    </div>
+
+    <!-- CONTADOR DE DOADORES -->
+    <div class="donor-counter">
+        <div class="donor-box">
+            <span class="donor-icon">🙌</span>
+            <span class="donor-label portuguese-visible">Pessoas que já apoiaram a live:</span>
+            <span class="donor-label english-visible">People who supported the live:</span>
+            <span class="donor-number" id="donorCount">0</span>
+        </div>
     </div>
 
     <main id="container">
@@ -60,6 +77,14 @@
                     <span id="likeCount">5.2K</span>
                 </button>
             </div>
+
+            <!-- Controle TTS -->
+            <div class="tts-control">
+                <button id="ttsToggleBtn" class="tts-toggle-btn" onclick="toggleTTS()">
+                    🔊 TTS Ligado
+                </button>
+
+            </div>
         </section>
 
         <nav aria-label="Links principais">
@@ -73,9 +98,12 @@
                 <li>
                     <a href="#" onclick="showJourneyModal(); return false;">Minha Jornada</a>
                 </li>
+                <li>
+                    <a href="#" onclick="showRankingModal(); return false;">🏆 Ranking de Doadores</a>
+                </li>
                 <li class="language-dependent">
                     <a href="#" id="supportButtonPT" onclick="showPixModal()" class="portuguese-visible">Seja um Apoiador</a>
-                    <a href="#" id="supportButtonEN" onclick="paypalModal()" class="english-visible">Be a Supporter</a>
+                    <a href="#" id="supportButtonEN" onclick="showPaypalModal()" class="english-visible">Be a Supporter</a>
                 </li>
                 <li>
                     <a href="https://mail.google.com/mail/?view=cm&fs=1&to=nagilalimanah@gmail.com" target="_blank" rel="noopener noreferrer">Contato Profissional</a>
@@ -87,7 +115,7 @@
             <a href="https://www.instagram.com/nagilalima22/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
                 <ion-icon name="logo-instagram"></ion-icon>
             </a>
-            <a href="https://www.tiktok.com/@nagilalima22" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+            <a href="https://www.tiktok.com/@nagilalima22/" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
                 <ion-icon name="logo-tiktok"></ion-icon>
             </a>
             <a href="https://mail.google.com/mail/?view=cm&fs=1&to=nagilalimanah@gmail.com" target="_blank" rel="noopener noreferrer" aria-label="Gmail">
@@ -100,20 +128,26 @@
         </footer>
     </main>
 
-    <!-- Modal PIX -->
+    <!-- Modal PIX (Português) -->
     <div id="pixModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="pixModalTitle" aria-describedby="pixModalDesc" tabindex="-1">
         <div class="modal-content">
             <button class="close-modal" aria-label="Fechar modal" onclick="hidePixModal()">&times;</button>
             <h3 id="pixModalTitle">💖 Apoie meu trabalho</h3>
             <p id="pixModalDesc">Digite o valor (mínimo R$1):</p>
 
+            <!-- Campo nome do doador -->
+            <input type="text" id="pixDonorName" placeholder="Seu nome (opcional)" maxlength="50" style="width:100%; padding:12px; margin:10px 0; border-radius:8px; border:1px solid var(--pink-accent); background:rgba(255,255,255,0.1); color:var(--text-color);">
+
+            <!-- Campo mensagem personalizada -->
+            <input type="text" id="pixDonorMessage" placeholder="Deixe uma mensagem (opcional) - Ex: Oi Nagila, adoro seu conteúdo!" maxlength="200" style="width:100%; padding:12px; margin:10px 0; border-radius:8px; border:1px solid var(--pink-accent); background:rgba(255,255,255,0.1); color:var(--text-color); font-size:14px;">
+
             <div class="value-control">
-                <button class="value-btn minus" aria-label="Diminuir valor" onclick="changeValue(-1)">−</button>
+                <button class="value-btn minus" aria-label="Diminuir valor" onclick="changePixValue(-1)">−</button>
                 <input type="number" id="valor" min="1" step="1" value="5" placeholder="Ex: 10" aria-describedby="pixModalDesc" />
-                <button class="value-btn plus" aria-label="Aumentar valor" onclick="changeValue(1)">+</button>
+                <button class="value-btn plus" aria-label="Aumentar valor" onclick="changePixValue(1)">+</button>
             </div>
 
-            <button class="generate-btn" onclick="gerarPix()">Gerar QR Code</button>
+            <button class="generate-btn" onclick="gerarPix()">Gerar QR Code PIX</button>
 
             <div id="qrcode" aria-live="polite" aria-atomic="true"></div>
 
@@ -121,22 +155,62 @@
                 <button id="copyQRBtn" class="action-btn" disabled aria-disabled="true">
                     <ion-icon name="copy-outline"></ion-icon> Copiar QR Code
                 </button>
-                <p id="status" aria-live="polite" aria-atomic="true"></p>
+                <p id="pixStatus" aria-live="polite" aria-atomic="true"></p>
             </div>
 
             <div class="pix-key">
                 <p>Ou copie a chave PIX:</p>
                 <div class="key-box" tabindex="0" role="textbox" aria-readonly="true">622e3039-f634-4371-8086-66ed54f3f9a9</div>
             </div>
+            
+            <!-- Dica -->
+            <div style="margin-top: 15px; padding: 10px; background: rgba(255,105,180,0.1); border-radius: 8px; font-size: 12px; opacity: 0.7;">
+                💡 Exemplo: "Oi Nagila, te acompanho há meses e adoro suas lives!"
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal PayPal (Inglês) -->
+    <div id="paypalModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="paypalModalTitle" tabindex="-1">
+        <div class="modal-content">
+            <button class="close-modal" aria-label="Close modal" onclick="hidePaypalModal()">&times;</button>
+            <h3 id="paypalModalTitle">💖 Support my work via PayPal</h3>
+
+            <div class="paypal-donation">
+                <p class="donation-text">One-time donation:</p>
+
+                <!-- Campo nome do doador -->
+                <input type="text" id="paypalDonorName" placeholder="Your name (optional)" maxlength="50" style="width:100%; padding:12px; margin:10px 0; border-radius:8px; border:1px solid var(--pink-accent); background:rgba(255,255,255,0.1); color:var(--text-color);">
+
+                <!-- Campo mensagem personalizada -->
+                <input type="text" id="paypalDonorMessage" placeholder="Leave a message (optional) - Ex: Hi Nagila, I love your live!" maxlength="200" style="width:100%; padding:12px; margin:10px 0; border-radius:8px; border:1px solid var(--pink-accent); background:rgba(255,255,255,0.1); color:var(--text-color); font-size:14px;">
+
+                <div class="value-control">
+                    <button class="value-btn minus" aria-label="Decrease amount" onclick="changePaypalValue(-5)">−</button>
+                    <input type="number" id="paypalValue" min="2" step="5" value="10" aria-label="Donation amount">
+                    <button class="value-btn plus" aria-label="Increase amount" onclick="changePaypalValue(5)">+</button>
+                </div>
+
+                <form action="https://www.paypal.com/donate" method="post" target="_blank" id="paypalForm">
+                    <input type="hidden" name="business" value="nagilalimanah@gmail.com">
+                    <input type="hidden" name="currency_code" value="BRL">
+                    <input type="hidden" name="amount" id="paypalAmount" value="10">
+                    <input type="hidden" name="item_name" id="paypalItemName" value="Donation for Nagila Lima">
+                    <button type="submit" class="donate-btn">
+                        <ion-icon name="logo-paypal"></ion-icon> Donate via PayPal
+                    </button>
+                </form>
+
+                <p class="donation-note">* You will be redirected to PayPal's secure website</p>
+            </div>
         </div>
     </div>
 
     <!-- Modal Vídeos -->
     <div class="modamodal" id="videosModalContainer">
-
         <div id="videosModal" class="modal" role="dialog" aria-modal="true" tabindex="-1">
             <div class="modal-content videos-content">
-                <h3>🎥 Vídeos Populares<button onclick="fecharmodal()">x</button></h3>
+                <h3>🎥 Vídeos Populares <button onclick="fecharmodal()" style="float:right; background:transparent; border:none; color:var(--text-color); font-size:20px; cursor:pointer;">x</button></h3>
 
                 <div class="video-container-wrapper">
                     <div class="video-item" data-video-id="7502111719888669958">
@@ -153,41 +227,6 @@
         </div>
     </div>
 
-
-
-
-
-
-
-    <!-- Modal PayPal -->
-    <div id="paypalModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="paypalModalTitle" tabindex="-1">
-        <div class="modal-content">
-            <button class="close-modal" aria-label="Close modal" onclick="hidePaypalModal()">&times;</button>
-            <h3 id="paypalModalTitle">💖 Support my work via PayPal</h3>
-
-            <div class="paypal-donation">
-                <p class="donation-text">One-time donation:</p>
-
-                <div class="value-control">
-                    <button class="value-btn minus" aria-label="Decrease amount" onclick="changePaypalValue(-1)">−</button>
-                    <input type="number" id="paypalValue" min="2" step="5" value="5" aria-label="Donation amount">
-                    <button class="value-btn plus" aria-label="Increase amount" onclick="changePaypalValue(5)">+</button>
-                </div>
-
-                <form action="https://www.paypal.com/donate" method="post" target="_blank">
-                    <input type="hidden" name="business" value="nagilalimanah@gmail.com">
-                    <input type="hidden" name="currency_code" value="BRL">
-                    <input type="hidden" name="amount" id="paypalAmount" value="10">
-                    <button type="submit" class="donate-btn">
-                    <ion-icon name="logo-paypal"></ion-icon> Donate via PayPal
-                </button>
-                </form>
-
-                <p class="donation-note">* You will be redirected to PayPal's secure website</p>
-            </div>
-        </div>
-    </div>
-
     <!-- Modal Minha Jornada -->
     <div id="journeyModal" class="modal" style="display:none;">
         <div class="modal-content" style="max-width:600px;">
@@ -199,15 +238,22 @@
                 <br>
                 <p>Além do TikTok, sou fisioterapeuta e adoro estudar para me aprimorar tanto na minha profissão quanto em outras áreas da vida.</p>
                 <p>Acho que o aprendizado constante é essencial para crescer e ajudar melhor quem precisa.</p>
+            </div>
+        </div>
+    </div>
 
-                <!-- Cole aqui todo o texto que você quer mostrar -->
+    <!-- Modal Ranking -->
+    <div id="rankingModal" class="modal" style="display:none;">
+        <div class="modal-content" style="max-width:500px;">
+            <button class="close-modal" onclick="hideRankingModal()">&times;</button>
+            <h3>🏆 Ranking de Doadores</h3>
+            <div id="rankingContent" style="margin-top:20px;">
+                <p style="text-align:center; opacity:0.7;">Carregando ranking...</p>
             </div>
         </div>
     </div>
 
     <!-- Ionicons -->
-    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 

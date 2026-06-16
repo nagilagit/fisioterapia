@@ -1,0 +1,898 @@
+// Variáveis globais
+const BACKEND_URL = 'https://api.nagilalima.site';
+let currentLanguage = 'portuguese';
+let socket = null;
+let donorCount = 0;
+let currentPaymentId = null;
+let paymentCheckInterval = null;
+
+// =========================
+// TTS - TEXT TO SPEECH (CORRIGIDO E MELHORADO)
+// =========================
+let ttsEnabled = true;
+let currentUtterance = null;
+let messageQueue = [];
+let isSpeaking = false;
+
+const ttsConfig = {
+    rate: 1.03,
+    pitch: 1.05,
+    volume: 0.9,
+    voice: null
+};
+
+function initTTSVoices() {
+    if (!('speechSynthesis' in window)) {
+        console.warn('⚠️ Navegador não suporta TTS');
+        ttsEnabled = false;
+        return;
+    }
+
+    const loadVoices = () => {
+        const voices = window.speechSynthesis.getVoices();
+        console.log('🎤 Vozes disponíveis:', voices.map(v => v.name));
+        
+        if (voices.length === 0) {
+            console.log('⏳ Nenhuma voz encontrada, tentando novamente...');
+            setTimeout(loadVoices, 500);
+            return;
+        }
+
+        const portugueseVoice = 
+            voices.find(v => v.lang.startsWith('pt-BR') && v.name.includes('Natural')) ||
+            voices.find(v => v.lang.startsWith('pt-BR') && v.name.includes('Neural')) ||
+            voices.find(v => v.lang.startsWith('pt-BR') && v.name.includes('Google')) ||
+            voices.find(v => v.lang.startsWith('pt-BR') && v.name.includes('Heloisa')) ||
+            voices.find(v => v.lang.startsWith('pt-BR') && v.name.includes('Maria')) ||
+            voices.find(v => v.lang.startsWith('pt-BR'));
+        
+        if (portugueseVoice) {
+            ttsConfig.voice = portugueseVoice;
+            console.log('✅ Voz selecionada:', portugueseVoice.name);
+        } else {
+            ttsConfig.voice = voices[0] || null;
+            console.log('⚠️ Usando voz padrão:', ttsConfig.voice?.name || 'Nenhuma');
+        }
+    };
+
+    loadVoices();
+    
+    if (window.speechSynthesis.onvoiceschanged !== undefined) {
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+}
+
+function processMessageQueue() {
+    if (isSpeaking) {
+        console.log('⏳ Já está falando, aguardando...');
+        return;
+    }
+    
+    if (messageQueue.length === 0) {
+        console.log('📭 Fila vazia');
+        return;
+    }
+    
+    if (!ttsEnabled) {
+        console.log('🔇 TTS desligado');
+        messageQueue = [];
+        return;
+    }
+
+    const nextMessage = messageQueue.shift();
+    console.log('🗣️ Processando mensagem da fila:', nextMessage);
+    
+    isSpeaking = true;
+
+    const { nome, mensagem, valor, metodo } = nextMessage;
+    const valorFormatado = metodo === 'PIX' ? `R$${valor.toFixed(2)}` : `US$${valor.toFixed(2)}`;
+    
+    // ===== MENSAGEM MAIS LONGA E DETALHADA =====
+    const frasesInicio = [
+        `Nova doação acabou de chegar!`,
+        `Recebemos uma doação incrível!`,
+        `Olha só que legal!`,
+        `Agora agora, uma nova doação!`,
+        `Temos uma nova doação!`,
+        `Pessoal, olha só!`,
+        `Que legal, mais uma doação!`,
+        `Uhuuul! Nova doação!`
+    ];
+    
+    const frasesAgradecimento = [
+        `Muito obrigado`,
+        `Agradeço demais`,
+        `Que incrível`,
+        `Fico muito feliz`,
+        `Que gesto lindo`,
+        `Sou muito grata`
+    ];
+    
+    const randomInicio = frasesInicio[Math.floor(Math.random() * frasesInicio.length)];
+    const randomAgradecimento = frasesAgradecimento[Math.floor(Math.random() * frasesAgradecimento.length)];
+    
+    let texto = `${randomInicio} ${nome} doou ${valorFormatado}`;
+    
+    if (metodo === 'PIX') {
+        texto += ` via PIX`;
+    } else if (metodo === 'PayPal') {
+        texto += ` via PayPal`;
+    }
+    
+    if (mensagem && mensagem.trim() !== '') {
+        texto += ` e deixou a seguinte mensagem: ${mensagem}`;
+    }
+    
+    texto += `, ${randomAgradecimento}!`;
+    
+    if (donorCount > 0 && donorCount % 5 === 0) {
+        texto += ` Já são ${donorCount} doações! Vocês são demais!`;
+    }
+    
+    console.log('🔊 Falando:', texto);
+
+    currentUtterance = new SpeechSynthesisUtterance(texto);
+    currentUtterance.lang = 'pt-BR';
+    currentUtterance.rate = ttsConfig.rate;
+    currentUtterance.pitch = ttsConfig.pitch;
+    currentUtterance.volume = ttsConfig.volume;
+    
+    if (ttsConfig.voice) {
+        currentUtterance.voice = ttsConfig.voice;
+    }
+
+    currentUtterance.onend = function() {
+        console.log('✅ Fala finalizada');
+        isSpeaking = false;
+        currentUtterance = null;
+        setTimeout(() => processMessageQueue(), 100);
+    };
+
+    currentUtterance.onerror = function(event) {
+        console.error('❌ Erro no TTS:', event);
+        isSpeaking = false;
+        currentUtterance = null;
+        setTimeout(() => processMessageQueue(), 200);
+    };
+
+    try {
+        window.speechSynthesis.speak(currentUtterance);
+        console.log('🎤 TTS iniciado');
+    } catch (error) {
+        console.error('❌ Erro ao iniciar TTS:', error);
+        isSpeaking = false;
+        currentUtterance = null;
+        processMessageQueue();
+    }
+}
+
+function speakDonationMessage(nome, mensagem, valor, metodo) {
+    console.log('📨 speakDonationMessage chamado:', { nome, mensagem, valor, metodo });
+    
+    if (!ttsEnabled) {
+        console.log('🔇 TTS desabilitado, ignorando');
+        return;
+    }
+
+    messageQueue.push({ 
+        nome: nome || 'Anônimo', 
+        mensagem: mensagem || '', 
+        valor: valor || 0, 
+        metodo: metodo || 'PIX' 
+    });
+    
+    console.log(`📥 Mensagem adicionada à fila. Tamanho da fila: ${messageQueue.length}`);
+    processMessageQueue();
+}
+
+function speakCustomMessage(texto) {
+    console.log('💬 speakCustomMessage:', texto);
+    
+    if (!ttsEnabled) return;
+
+    if (currentUtterance) {
+        window.speechSynthesis.cancel();
+        isSpeaking = false;
+        currentUtterance = null;
+    }
+
+    messageQueue.push({ 
+        nome: 'Sistema', 
+        mensagem: texto, 
+        valor: 0, 
+        metodo: 'SISTEMA' 
+    });
+    
+    processMessageQueue();
+}
+
+function toggleTTS() {
+    ttsEnabled = !ttsEnabled;
+    const btn = document.getElementById('ttsToggleBtn');
+    if (btn) {
+        btn.innerHTML = ttsEnabled ? '🔊 TTS Ligado' : '🔇 TTS Desligado';
+        btn.classList.toggle('active', ttsEnabled);
+    }
+    
+    if (!ttsEnabled && currentUtterance) {
+        window.speechSynthesis.cancel();
+        isSpeaking = false;
+        messageQueue = [];
+    }
+    
+    localStorage.setItem('ttsEnabled', ttsEnabled);
+    console.log(`🔊 TTS ${ttsEnabled ? 'Ligado' : 'Desligado'}`);
+}
+
+// =========================
+// CONEXÃO WEBSOCKET
+// =========================
+function connectWebSocket() {
+    socket = io(BACKEND_URL, {
+        transports: ['websocket'],
+        autoConnect: true
+    });
+    
+    socket.on('connect', () => {
+        console.log('✅ Conectado ao servidor da live!');
+        addSystemMessage('🟢 Live conectada - doações em tempo real!');
+    });
+    
+    socket.on('status-inicial', (data) => {
+        donorCount = data.donorCount || 0;
+        updateDonorCounter();
+    });
+    
+    socket.on('nova-doacao', (doacao) => {
+        console.log('📡 NOVA DOAÇÃO RECEBIDA:', doacao);
+        donorCount = doacao.donorCount;
+        updateDonorCounter();
+        showDonationAlert(doacao.nome, doacao.valor, doacao.metodo, doacao.mensagem);
+        speakDonationMessage(doacao.nome, doacao.mensagem, doacao.valor, doacao.metodo);
+        
+        if (donorCount % 10 === 0) {
+            showConfetti();
+            speakCustomMessage(`Uau! ${donorCount} doações! Muito obrigada a todos!`);
+        }
+    });
+    
+    socket.on('disconnect', () => {
+        console.log('⚠️ Conexão perdida. Reconectando...');
+        addSystemMessage('🔴 Reconectando à live...');
+        setTimeout(() => connectWebSocket(), 3000);
+    });
+}
+
+function updateDonorCounter() {
+    const donorElement = document.getElementById('donorCount');
+    if (donorElement) {
+        donorElement.textContent = donorCount;
+        donorElement.style.transform = 'scale(1.2)';
+        setTimeout(() => {
+            donorElement.style.transform = 'scale(1)';
+        }, 300);
+    }
+}
+
+function showDonationAlert(nome, valor, metodo, mensagem = '') {
+    const alerta = document.createElement('div');
+    alerta.className = 'donation-alert';
+    const metodoIcon = metodo === 'PIX' ? '💚' : '💙';
+    const metodoNome = metodo === 'PIX' ? 'PIX' : 'PayPal';
+    
+    let mensagemHtml = '';
+    if (mensagem && mensagem.trim() !== '') {
+        mensagemHtml = `<div class="donation-message">"${escapeHtml(mensagem)}"</div>`;
+    }
+    
+    const frasesExtra = [
+        '🎉 Que incrível!',
+        '💖 Muito obrigado!',
+        '🌟 Você é demais!',
+        '🙏 Gratidão!',
+        '✨ Que gesto lindo!',
+        '💕 Amo vocês!'
+    ];
+    const randomFrase = frasesExtra[Math.floor(Math.random() * frasesExtra.length)];
+    
+    alerta.innerHTML = `
+        <div class="donation-content">
+            <span class="heart-icon">${metodoIcon}</span>
+            <div style="flex:1; min-width:0;">
+                <div class="donor-name" style="font-size: 16px;">🌟 ${escapeHtml(nome)}</div>
+                <div class="donation-amount" style="font-size: 15px; margin: 4px 0;">
+                    doou <strong>${metodo === 'PIX' ? 'R$' : 'US$'} ${valor.toFixed(2)}</strong> via ${metodoNome}
+                </div>
+                ${mensagemHtml}
+                <div style="font-size: 13px; margin-top: 4px; color: #ffd700;">
+                    ${randomFrase}
+                </div>
+                <div style="font-size: 11px; opacity: 0.7; margin-top: 2px;">
+                    Total de doações: ${donorCount}
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(alerta);
+    
+    setTimeout(() => {
+        if (alerta && alerta.remove) alerta.remove();
+    }, 8000);
+}
+
+function showConfetti() {
+    for (let i = 0; i < 50; i++) {
+        const particle = document.createElement('div');
+        particle.style.cssText = `
+            position: fixed;
+            left: ${Math.random() * 100}%;
+            top: -20px;
+            width: 8px;
+            height: 8px;
+            background: ${['#ff69b4', '#ff1493', '#ff0000', '#ffa500', '#ffff00'][Math.floor(Math.random() * 5)]};
+            border-radius: ${Math.random() > 0.5 ? '50%' : '0'};
+            animation: fall ${Math.random() * 3 + 2}s linear forwards;
+            z-index: 9999;
+            pointer-events: none;
+        `;
+        document.body.appendChild(particle);
+        setTimeout(() => particle.remove(), 5000);
+    }
+}
+
+function addSystemMessage(msg) {
+    const alerta = document.createElement('div');
+    alerta.className = 'donation-alert';
+    alerta.style.background = 'linear-gradient(135deg, #ffa500, #ff6347)';
+    alerta.innerHTML = `<div class="donation-content">${msg}</div>`;
+    document.body.appendChild(alerta);
+    setTimeout(() => alerta.remove(), 4000);
+}
+
+// =========================
+// MODO CLARO/ESCURO
+// =========================
+function toggleMode() {
+    const html = document.documentElement;
+    html.classList.toggle('light');
+    const img = document.querySelector('#profile img');
+    if (!img) return;
+    
+    if (html.classList.contains('light')) {
+        img.style.borderColor = '#FF1493';
+        img.style.boxShadow = '0 0 20px rgba(255, 20, 147, 0.5)';
+        img.src = './nagila.jpeg';
+    } else {
+        img.style.borderColor = '#FF69B4';
+        img.style.boxShadow = '0 0 20px rgba(255, 105, 180, 0.5)';
+        img.src = './nagila2.jpg';
+    }
+}
+
+// =========================
+// CONTADOR DE LIKES
+// =========================
+function setupLikeButton() {
+    const likeButton = document.getElementById('likeButton');
+    const likeCount = document.getElementById('likeCount');
+    if (likeButton && likeCount) {
+        likeButton.addEventListener('click', function() {
+            this.classList.toggle('liked');
+            let currentText = likeCount.textContent;
+            let isK = currentText.includes('K');
+            let number = parseFloat(currentText.replace('K', ''));
+            let absoluteNumber = isK ? number * 1000 : number;
+            absoluteNumber += this.classList.contains('liked') ? 1 : -1;
+            absoluteNumber = Math.max(0, absoluteNumber);
+            if (absoluteNumber >= 1000) {
+                likeCount.textContent = (absoluteNumber / 1000).toFixed(1).replace('.0', '') + 'K';
+            } else {
+                likeCount.textContent = absoluteNumber.toString();
+            }
+            this.setAttribute('aria-pressed', this.classList.contains('liked'));
+        });
+    }
+}
+
+// =========================
+// FUNÇÕES PIX
+// =========================
+function showPixModal() {
+    const modal = document.getElementById('pixModal');
+    if (modal) modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    document.getElementById('pixDonorName').value = '';
+    document.getElementById('pixDonorMessage').value = '';
+    document.getElementById('valor').value = '5';
+    document.getElementById('pixStatus').innerHTML = '';
+    document.getElementById('qrcode').innerHTML = '';
+    document.getElementById('qrcode').style.display = 'none';
+    
+    if (paymentCheckInterval) {
+        clearInterval(paymentCheckInterval);
+        paymentCheckInterval = null;
+    }
+}
+
+function hidePixModal() {
+    const modal = document.getElementById('pixModal');
+    if (modal) modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+    
+    if (paymentCheckInterval) {
+        clearInterval(paymentCheckInterval);
+        paymentCheckInterval = null;
+    }
+}
+
+function changePixValue(amount) {
+    const input = document.getElementById('valor');
+    if (input) {
+        let value = parseInt(input.value) + amount;
+        if (value < 1) value = 1;
+        input.value = value;
+    }
+}
+
+async function gerarPix() {
+    const valorInput = document.getElementById('valor');
+    const nomeInput = document.getElementById('pixDonorName');
+    const mensagemInput = document.getElementById('pixDonorMessage');
+    const statusEl = document.getElementById('pixStatus');
+    const qrcodeDiv = document.getElementById('qrcode');
+    const copyQRBtn = document.getElementById('copyQRBtn');
+    const pixKeyBox = document.querySelector('.key-box');
+    
+    const valor = parseFloat(valorInput.value);
+    const nome = nomeInput?.value.trim() || 'Anônimo';
+    const mensagem = mensagemInput?.value.trim() || '';
+    
+    if (isNaN(valor) || valor < 1) {
+        statusEl.textContent = "❌ Valor inválido! Mínimo R$1";
+        statusEl.style.color = "#ff4444";
+        return;
+    }
+    
+    statusEl.textContent = "⏳ Criando pagamento PIX...";
+    statusEl.style.color = "#ffa500";
+    
+    try {
+        const response = await fetch(`${BACKEND_URL}/api/create-pix-payment`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nome, valor, mensagem })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success && data.qr_code_base64) {
+            qrcodeDiv.innerHTML = '';
+            
+            const img = document.createElement('img');
+            img.src = `data:image/png;base64,${data.qr_code_base64}`;
+            img.alt = 'QR Code PIX';
+            qrcodeDiv.appendChild(img);
+            qrcodeDiv.style.display = 'flex';
+            
+            if (copyQRBtn) {
+                copyQRBtn.disabled = false;
+                copyQRBtn.setAttribute('aria-disabled', 'false');
+                copyQRBtn.removeEventListener('click', copyQRCodeHandler);
+                copyQRBtn.addEventListener('click', copyQRCodeHandler);
+                copyQRBtn.pixCode = data.qr_code;
+            }
+            
+            if (pixKeyBox) {
+                pixKeyBox.textContent = data.qr_code;
+                pixKeyBox.setAttribute('data-pix-code', data.qr_code);
+            }
+            
+            statusEl.innerHTML = `✨ QR Code gerado! ✨<br>📱 Escaneie com o app do seu banco ou <strong>copie o código PIX abaixo</strong>`;
+            statusEl.style.color = "#00ff88";
+            
+            currentPaymentId = data.payment_id;
+            
+            await fetch(`${BACKEND_URL}/api/pending-donation`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    nome, 
+                    valor, 
+                    metodo: 'PIX',
+                    mensagem: mensagem,
+                    status: 'Aguardando pagamento PIX... ⏳'
+                })
+            });
+            
+            if (paymentCheckInterval) clearInterval(paymentCheckInterval);
+            paymentCheckInterval = setInterval(() => verificarPagamento(currentPaymentId, valor, nome, mensagem), 5000);
+            
+        } else {
+            throw new Error(data.error || 'Erro ao criar pagamento');
+        }
+        
+    } catch (error) {
+        console.error("Erro ao criar pagamento:", error);
+        statusEl.textContent = `❌ Erro: ${error.message}`;
+        statusEl.style.color = "#ff4444";
+        qrcodeDiv.style.display = 'none';
+        if (copyQRBtn) copyQRBtn.disabled = true;
+    }
+}
+
+function copyQRCodeHandler(event) {
+    const pixCode = event.currentTarget.pixCode;
+    if (pixCode) {
+        copyToClipboard(pixCode);
+        const statusEl = document.getElementById('pixStatus');
+        if (statusEl) {
+            statusEl.innerHTML = '📋 Código PIX copiado! Cole no app do seu banco.';
+            statusEl.style.color = "#00ff88";
+            setTimeout(() => {
+                if (statusEl.innerHTML === '📋 Código PIX copiado! Cole no app do seu banco.') {
+                    statusEl.innerHTML = `✨ QR Code gerado! ✨<br>📱 Escaneie com o app do seu banco ou <strong>copie o código PIX abaixo</strong>`;
+                }
+            }, 3000);
+        }
+    }
+}
+
+async function verificarPagamento(paymentId, valor, nome, mensagem) {
+    try {
+        const response = await fetch(`${BACKEND_URL}/api/check-payment/${paymentId}`);
+        const data = await response.json();
+        
+        if (data.paid === true) {
+            clearInterval(paymentCheckInterval);
+            paymentCheckInterval = null;
+            
+            const statusEl = document.getElementById('pixStatus');
+            statusEl.innerHTML = "🎉 Pagamento confirmado! Obrigado pelo apoio!";
+            statusEl.style.color = "#00ff88";
+            
+            setTimeout(() => {
+                hidePixModal();
+            }, 2000);
+        }
+    } catch (error) {
+        console.log("Verificando pagamento...");
+    }
+}
+
+// =========================
+// PAYPAL FUNCTIONS
+// =========================
+function showPaypalModal() {
+    const modal = document.getElementById('paypalModal');
+    if (modal) modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    document.getElementById('paypalDonorName').value = '';
+    document.getElementById('paypalDonorMessage').value = '';
+    document.getElementById('paypalValue').value = '10';
+    updatePaypalAmount();
+}
+
+function hidePaypalModal() {
+    const modal = document.getElementById('paypalModal');
+    if (modal) modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+function changePaypalValue(amount) {
+    const input = document.getElementById('paypalValue');
+    if (input) {
+        let value = parseInt(input.value) + amount;
+        if (value < 2) value = 2;
+        input.value = value;
+        updatePaypalAmount();
+    }
+}
+
+function updatePaypalAmount() {
+    const value = document.getElementById('paypalValue');
+    const amountField = document.getElementById('paypalAmount');
+    const nameInput = document.getElementById('paypalDonorName');
+    const messageInput = document.getElementById('paypalDonorMessage');
+    const itemNameField = document.getElementById('paypalItemName');
+    
+    if (value && amountField) {
+        amountField.value = value.value;
+    }
+    if (nameInput && itemNameField) {
+        const nome = nameInput.value.trim() || 'Anonymous';
+        const mensagem = messageInput?.value.trim() || '';
+        let itemName = `Donation from ${nome} - Nagila Lima Live`;
+        if (mensagem) {
+            itemName += ` | Message: "${mensagem}"`;
+        }
+        itemNameField.value = itemName;
+    }
+}
+
+// =========================
+// MODAL VÍDEOS
+// =========================
+function showVideosModal() {
+    const modalContainer = document.getElementById("videosModalContainer");
+    if (modalContainer) modalContainer.style.display = "block";
+    const modal = document.getElementById('videosModal');
+    if (modal) {
+        modal.style.display = 'block';
+        loadVideos();
+    }
+}
+
+function fecharmodal() {
+    const modalContainer = document.getElementById("videosModalContainer");
+    if (modalContainer) modalContainer.style.display = "none";
+    document.body.style.overflow = 'auto';
+}
+
+function loadVideos() {
+    document.querySelectorAll('.video-item').forEach(item => {
+        const videoId = item.getAttribute('data-video-id');
+        if (!item.classList.contains('loaded') && videoId) {
+            item.innerHTML = `<iframe src="https://www.tiktok.com/embed/v2/${videoId}?autoplay=0" frameborder="0" allowfullscreen style="width:100%;height:100%;"></iframe>`;
+            item.classList.add('loaded');
+        }
+    });
+}
+
+// =========================
+// MODAL JORNADA
+// =========================
+function showJourneyModal() {
+    const modal = document.getElementById("journeyModal");
+    if (modal) modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function hideJourneyModal() {
+    const modal = document.getElementById("journeyModal");
+    if (modal) modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+// =========================
+// MODAL RANKING
+// =========================
+function showRankingModal() {
+    const modal = document.getElementById("rankingModal");
+    if (modal) modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    loadRanking();
+}
+
+function hideRankingModal() {
+    const modal = document.getElementById("rankingModal");
+    if (modal) modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+async function loadRanking() {
+    const content = document.getElementById('rankingContent');
+    if (!content) return;
+    
+    content.innerHTML = '<p style="text-align:center; opacity:0.7;">⏳ Carregando ranking...</p>';
+    
+    try {
+        const response = await fetch(`${BACKEND_URL}/api/donor-ranking`);
+        const data = await response.json();
+        
+        if (data.ranking && data.ranking.length > 0) {
+            let html = '';
+            data.ranking.forEach((item, index) => {
+                const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}º`;
+                const topClass = index === 0 ? 'top1' : index === 1 ? 'top2' : index === 2 ? 'top3' : '';
+                html += `
+                    <div class="ranking-item ${topClass}">
+                        <span class="ranking-position">${medal}</span>
+                        <span class="ranking-name">${escapeHtml(item.nome)}</span>
+                        <span class="ranking-total">${item.count}x • R$ ${item.total.toFixed(2)}</span>
+                    </div>
+                `;
+            });
+            content.innerHTML = html;
+        } else {
+            content.innerHTML = '<p style="text-align:center; opacity:0.7;">📭 Nenhum doador ainda. Seja o primeiro! 💖</p>';
+        }
+    } catch (error) {
+        console.error('Erro ao carregar ranking:', error);
+        content.innerHTML = '<p style="text-align:center; color:#ff4444;">❌ Erro ao carregar ranking</p>';
+    }
+}
+
+// =========================
+// IDIOMAS
+// =========================
+const translationsData = {
+    portuguese: {
+        bio: "Streamer • Fisioterapeuta • Criadora de Conteúdo",
+        live: "Assistir minhas Lives",
+        videos: "Vídeos Populares",
+        journey: "Minha Jornada",
+        support: "Seja um Apoiador",
+        contact: "Contato Profissional",
+        footer: "💖 Conteúdo diário no TikTok! 💖<br /> Live todos os dias às 20h",
+        pixModalTitle: "💖 Apoie meu trabalho",
+        pixModalDesc: "Digite o valor (mínimo R$1):"
+    },
+    english: {
+        bio: "Streamer • Physiotherapist • Content Creator",
+        live: "Watch my Live Streams",
+        videos: "Popular Videos",
+        journey: "My Journey",
+        support: "Be a Supporter",
+        contact: "Professional Contact",
+        footer: "💖 Daily content on TikTok! 💖<br /> Live every day at 8PM",
+        pixModalTitle: "💖 Support my work",
+        pixModalDesc: "Enter amount (minimum $1):"
+    }
+};
+
+function translatePage(lang) {
+    currentLanguage = lang;
+    document.body.classList.remove('portuguese', 'english');
+    document.body.classList.add(lang);
+    
+    document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+    const activeBtn = lang === 'english' ? 'englishBtn' : 'portugueseBtn';
+    document.getElementById(activeBtn).classList.add('active');
+    
+    const t = translationsData[lang];
+    
+    const bioEl = document.querySelector('.bio');
+    if (bioEl) bioEl.textContent = t.bio;
+    
+    const navLinks = document.querySelectorAll('nav ul li a');
+    const linkTexts = [t.live, t.videos, t.journey, '', t.contact];
+    navLinks.forEach((link, index) => {
+        if (linkTexts[index] && linkTexts[index] !== '') {
+            link.textContent = linkTexts[index];
+        }
+    });
+    
+    const supportBtnPT = document.getElementById('supportButtonPT');
+    const supportBtnEN = document.getElementById('supportButtonEN');
+    if (supportBtnPT) supportBtnPT.textContent = t.support;
+    if (supportBtnEN) supportBtnEN.textContent = t.support;
+    
+    const footer = document.querySelector('footer');
+    if (footer) footer.innerHTML = t.footer;
+    
+    const pixTitle = document.getElementById('pixModalTitle');
+    if (pixTitle) pixTitle.textContent = t.pixModalTitle;
+    const pixDesc = document.getElementById('pixModalDesc');
+    if (pixDesc) pixDesc.textContent = t.pixModalDesc;
+    
+    localStorage.setItem('preferredLanguage', lang);
+}
+
+function loadSavedLanguage() {
+    const savedLang = localStorage.getItem('preferredLanguage') || 'portuguese';
+    translatePage(savedLang);
+}
+
+// =========================
+// UTILITÁRIOS
+// =========================
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        console.log('Copiado para clipboard');
+        const status = document.getElementById('pixStatus');
+        if (status) {
+            status.innerHTML = '📋 Código copiado!';
+            setTimeout(() => {
+                if (status.innerHTML === '📋 Código copiado!') {
+                    status.innerHTML = '✅ QR Code gerado! Escaneie com seu banco para pagar.';
+                }
+            }, 2000);
+        }
+    }).catch(err => {
+        console.error('Erro ao copiar:', err);
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+    });
+}
+
+// =========================
+// INICIALIZAÇÃO
+// =========================
+document.addEventListener('DOMContentLoaded', () => {
+    setupLikeButton();
+    loadSavedLanguage();
+    connectWebSocket();
+    initTTSVoices();
+    
+    const savedTTS = localStorage.getItem('ttsEnabled');
+    if (savedTTS !== null) {
+        ttsEnabled = savedTTS === 'true';
+        const btn = document.getElementById('ttsToggleBtn');
+        if (btn) {
+            btn.innerHTML = ttsEnabled ? '🔊 TTS Ligado' : '🔇 TTS Desligado';
+            btn.classList.toggle('active', ttsEnabled);
+        }
+    }
+    
+    const keyBox = document.querySelector('.key-box');
+    if (keyBox) {
+        keyBox.addEventListener('click', function() {
+            copyToClipboard(this.innerText.trim());
+            const status = document.getElementById('pixStatus');
+            if (status) {
+                const originalText = status.innerHTML;
+                status.innerHTML = '📋 Chave PIX copiada!';
+                status.style.color = '#00ff88';
+                setTimeout(() => {
+                    if (status.innerHTML === '📋 Chave PIX copiada!') {
+                        status.innerHTML = originalText;
+                    }
+                }, 2000);
+            }
+        });
+    }
+    
+    window.onclick = function(event) {
+        const pixModal = document.getElementById('pixModal');
+        if (event.target === pixModal) hidePixModal();
+        const paypalModal = document.getElementById('paypalModal');
+        if (event.target === paypalModal) hidePaypalModal();
+        const videosModal = document.getElementById('videosModal');
+        if (event.target === videosModal) fecharmodal();
+        const journeyModal = document.getElementById('journeyModal');
+        if (event.target === journeyModal) hideJourneyModal();
+        const rankingModal = document.getElementById('rankingModal');
+        if (event.target === rankingModal) hideRankingModal();
+    };
+    
+    const paypalForm = document.getElementById('paypalForm');
+    const paypalNameInput = document.getElementById('paypalDonorName');
+    const paypalMessageInput = document.getElementById('paypalDonorMessage');
+    const paypalValueInput = document.getElementById('paypalValue');
+    
+    if (paypalNameInput) {
+        paypalNameInput.addEventListener('input', updatePaypalAmount);
+    }
+    if (paypalMessageInput) {
+        paypalMessageInput.addEventListener('input', updatePaypalAmount);
+    }
+    
+    if (paypalForm) {
+        paypalForm.addEventListener('submit', async function(e) {
+            const nome = paypalNameInput?.value.trim() || 'Anonymous';
+            const mensagem = paypalMessageInput?.value.trim() || '';
+            const valor = parseFloat(paypalValueInput?.value) || 10;
+            
+            try {
+                await fetch(`${BACKEND_URL}/api/simulate-donation`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        nome, 
+                        valor, 
+                        metodo: 'PayPal',
+                        mensagem: mensagem
+                    })
+                });
+            } catch (error) {
+                console.log("Webhook simulado - doação PayPal registrada");
+            }
+        });
+    }
+});
+
+const englishBtn = document.getElementById('englishBtn');
+const portugueseBtn = document.getElementById('portugueseBtn');
+if (englishBtn) englishBtn.addEventListener('click', () => translatePage('english'));
+if (portugueseBtn) portugueseBtn.addEventListener('click', () => translatePage('portuguese'));
