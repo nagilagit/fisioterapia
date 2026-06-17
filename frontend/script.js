@@ -82,11 +82,7 @@ function processMessageQueue() {
     
     let texto = `${randomInicio} ${nome} doou ${valorFormatado}`;
     
-    if (metodo === 'PIX') {
-        texto += ` via PIX`;
-    } else if (metodo === 'PayPal') {
-        texto += ` via PayPal`;
-    }
+   
     
     if (mensagem && mensagem.trim() !== '') {
         texto += ` e disse: ${mensagem}`;
@@ -249,7 +245,7 @@ function showDonationAlert(nome, valor, metodo, mensagem = '') {
             <div style="flex:1; min-width:0;">
                 <div class="donor-name" style="font-size: 16px;">🌟 ${escapeHtml(nome)}</div>
                 <div class="donation-amount" style="font-size: 15px; margin: 4px 0;">
-                    doou <strong>${metodo === 'PIX' ? 'R$' : 'US$'} ${valor.toFixed(2)}</strong> via ${metodoNome}
+                    doou <strong>${metodo === 'PIX' ? 'R$' : 'US$'} ${valor.toFixed(2)}</strong>  ${metodoNome}
                 </div>
                 ${mensagemHtml}
                 <div style="font-size: 13px; margin-top: 4px; color: #ffd700;">
