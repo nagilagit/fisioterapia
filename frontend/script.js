@@ -384,7 +384,7 @@ async function gerarPix() {
     const pixKeyBox = document.querySelector('.key-box');
     
     const valor = parseFloat(valorInput.value);
-    const nome = nomeInput?.value.trim() || 'Anônimo';
+    const nome = nomeInput?.value.trim() || 'Anonimo';
     const mensagem = mensagemInput?.value.trim() || '';
     
     // ============================================
