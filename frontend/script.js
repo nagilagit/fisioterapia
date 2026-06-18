@@ -10,6 +10,12 @@ let currentUtterance = null;
 let messageQueue = [];
 let isSpeaking = false;
 
+// ============================================
+// CONFIGURAÇÕES DE VALIDAÇÃO
+// ============================================
+const MAX_NAME_LENGTH = 50;
+const MAX_MESSAGE_LENGTH = 200;
+
 const ttsConfig = {
     rate: 1.05,
     pitch: 1.05,
@@ -81,8 +87,6 @@ function processMessageQueue() {
     const randomAgradecimento = frasesAgradecimento[Math.floor(Math.random() * frasesAgradecimento.length)];
     
     let texto = `${randomInicio} ${nome} doou ${valorFormatado}`;
-    
-   
     
     if (mensagem && mensagem.trim() !== '') {
         texto += ` e disse: ${mensagem}`;
@@ -382,6 +386,21 @@ async function gerarPix() {
     const valor = parseFloat(valorInput.value);
     const nome = nomeInput?.value.trim() || 'Anônimo';
     const mensagem = mensagemInput?.value.trim() || '';
+    
+    // ============================================
+    // VALIDAÇÃO DE TAMANHO DOS CAMPOS
+    // ============================================
+    if (nome.length > MAX_NAME_LENGTH) {
+        statusEl.textContent = `❌ Nome excede ${MAX_NAME_LENGTH} caracteres (${nome.length}/${MAX_NAME_LENGTH})`;
+        statusEl.style.color = "#ff4444";
+        return;
+    }
+    
+    if (mensagem.length > MAX_MESSAGE_LENGTH) {
+        statusEl.textContent = `❌ Mensagem excede ${MAX_MESSAGE_LENGTH} caracteres (${mensagem.length}/${MAX_MESSAGE_LENGTH})`;
+        statusEl.style.color = "#ff4444";
+        return;
+    }
     
     if (isNaN(valor) || valor < 1) {
         statusEl.textContent = "❌ Valor inválido! Mínimo R$1";
@@ -728,7 +747,7 @@ function translatePage(lang) {
         }
     });
     
-    // Traduz especificamente os botões de suporte (já que têm dois elementos)
+    // Traduz especificamente os botões de suporte
     const supportBtnPT = document.getElementById('supportButtonPT');
     const supportBtnEN = document.getElementById('supportButtonEN');
     if (supportBtnPT && supportBtnEN) {
@@ -808,6 +827,65 @@ function copyToClipboard(text) {
     });
 }
 
+// ============================================
+// CONTADOR DE CARACTERES PARA INPUTS
+// ============================================
+
+function setupCharCounter(inputId, counterId, maxLength) {
+    const input = document.getElementById(inputId);
+    const counter = document.getElementById(counterId);
+    
+    if (!input || !counter) return;
+    
+    // Força a cor do texto para branco
+    input.style.color = '#ffffff';
+    
+    function updateCounter() {
+        const currentLength = input.value.length;
+        const remaining = maxLength - currentLength;
+        
+        counter.textContent = `${currentLength}/${maxLength}`;
+        
+        // Remove classes anteriores
+        counter.classList.remove('warning', 'danger');
+        
+        // Adiciona classes baseado no uso
+        if (remaining <= 10) {
+            counter.classList.add('warning');
+        }
+        if (remaining <= 3) {
+            counter.classList.add('danger');
+        }
+        
+        // Aplica estilo visual no input
+        if (remaining <= 3) {
+            input.style.borderColor = '#ef4444';
+            input.style.boxShadow = '0 0 20px rgba(239, 68, 68, 0.15)';
+        } else if (remaining <= 10) {
+            input.style.borderColor = '#fbbf24';
+            input.style.boxShadow = '0 0 20px rgba(251, 191, 36, 0.1)';
+        } else {
+            input.style.borderColor = '';
+            input.style.boxShadow = '';
+        }
+    }
+    
+    // Atualiza ao digitar
+    input.addEventListener('input', updateCounter);
+    
+    // Atualiza ao colar conteúdo
+    input.addEventListener('paste', () => {
+        setTimeout(updateCounter, 10);
+    });
+    
+    // Inicializa
+    updateCounter();
+}
+
+// ============================================
+// EVENTO PRINCIPAL - DOM CARREGADO
+// ============================================
+
 document.addEventListener('DOMContentLoaded', () => {
     setupLikeButton();
     loadSavedLanguage();
@@ -823,6 +901,14 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.classList.toggle('active', ttsEnabled);
         }
     }
+    
+    // ============================================
+    // CONFIGURAR CONTADORES DE CARACTERES
+    // ============================================
+    setupCharCounter('pixDonorName', 'nameCounter', MAX_NAME_LENGTH);
+    setupCharCounter('pixDonorMessage', 'messageCounter', MAX_MESSAGE_LENGTH);
+    setupCharCounter('paypalDonorName', 'paypalNameCounter', MAX_NAME_LENGTH);
+    setupCharCounter('paypalDonorMessage', 'paypalMessageCounter', MAX_MESSAGE_LENGTH);
     
     const keyBox = document.querySelector('.key-box');
     if (keyBox) {
@@ -868,10 +954,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     if (paypalForm) {
-        paypalForm.addEventListener('submit', async function() {
+        paypalForm.addEventListener('submit', async function(e) {
             const nome = paypalNameInput?.value.trim() || 'Anonymous';
             const mensagem = paypalMessageInput?.value.trim() || '';
             const valor = parseFloat(paypalValueInput?.value) || 10;
+            
+            // ============================================
+            // VALIDAÇÃO DE TAMANHO - PAYPAL
+            // ============================================
+            if (nome.length > MAX_NAME_LENGTH) {
+                e.preventDefault();
+                alert(`❌ Nome excede ${MAX_NAME_LENGTH} caracteres (${nome.length}/${MAX_NAME_LENGTH})`);
+                return;
+            }
+            
+            if (mensagem.length > MAX_MESSAGE_LENGTH) {
+                e.preventDefault();
+                alert(`❌ Mensagem excede ${MAX_MESSAGE_LENGTH} caracteres (${mensagem.length}/${MAX_MESSAGE_LENGTH})`);
+                return;
+            }
             
             try {
                 await fetch(`${BACKEND_URL}/api/simulate-donation`, {

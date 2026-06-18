@@ -142,11 +142,17 @@
             <h3 id="pixModalTitle" data-translate="pixModalTitle">💖 Apoie meu trabalho</h3>
             <p id="pixModalDesc" data-translate="pixModalDesc">Digite o valor (mínimo R$1):</p>
 
-            <!-- Campo nome do doador -->
-            <input type="text" id="pixDonorName" placeholder="Seu nome (opcional)" maxlength="50" style="width:100%; padding:12px; margin:10px 0; border-radius:8px; border:1px solid var(--pink-accent); background:rgba(255,255,255,0.1); color:var(--text-color);">
+            <!-- Campo nome do doador COM CONTADOR -->
+            <div style="position:relative; width:100%;">
+                <input type="text" id="pixDonorName" placeholder="Seu nome (opcional)" maxlength="50" style="width:100%; padding:12px; margin:10px 0; border-radius:8px; border:1px solid var(--pink-accent); background:rgba(255,255,255,0.1); color:#ffffff; padding-right:60px;">
+                <span class="char-counter" id="nameCounter" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); font-size:12px; color:rgba(255,255,255,0.5); pointer-events:none;">0/50</span>
+            </div>
 
-            <!-- Campo mensagem personalizada -->
-            <input type="text" id="pixDonorMessage" placeholder="Deixe uma mensagem (opcional) - Ex: Oi Nagila, adoro seu conteúdo!" maxlength="200" style="width:100%; padding:12px; margin:10px 0; border-radius:8px; border:1px solid var(--pink-accent); background:rgba(255,255,255,0.1); color:var(--text-color); font-size:14px;">
+            <!-- Campo mensagem personalizada COM CONTADOR -->
+            <div style="position:relative; width:100%;">
+                <input type="text" id="pixDonorMessage" placeholder="Deixe uma mensagem (opcional) - Ex: Oi Nagila, adoro seu conteúdo!" maxlength="200" style="width:100%; padding:12px; margin:10px 0; border-radius:8px; border:1px solid var(--pink-accent); background:rgba(255,255,255,0.1); color:#ffffff; font-size:14px; padding-right:70px;">
+                <span class="char-counter" id="messageCounter" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); font-size:12px; color:rgba(255,255,255,0.5); pointer-events:none;">0/200</span>
+            </div>
 
             <div class="value-control">
                 <button class="value-btn minus" aria-label="Diminuir valor" onclick="changePixValue(-1)">−</button>
@@ -165,15 +171,7 @@
                 <p id="pixStatus" aria-live="polite" aria-atomic="true"></p>
             </div>
 
-            <div class="pix-key">
-                <p>Ou copie a chave PIX:</p>
-                <div class="key-box" tabindex="0" role="textbox" aria-readonly="true">622e3039-f634-4371-8086-66ed54f3f9a9</div>
-            </div>
-            
-            <!-- Dica -->
-            <div style="margin-top: 15px; padding: 10px; background: rgba(255,105,180,0.1); border-radius: 8px; font-size: 12px; opacity: 0.7;">
-                💡 Exemplo: "Oi Nagila, te acompanho há meses e adoro suas lives!"
-            </div>
+            <!-- CHAVE PIX E EXEMPLO REMOVIDOS -->
         </div>
     </div>
 
@@ -186,11 +184,17 @@
             <div class="paypal-donation">
                 <p class="donation-text" data-translate="paypalDesc">One-time donation:</p>
 
-                <!-- Campo nome do doador -->
-                <input type="text" id="paypalDonorName" placeholder="Your name (optional)" maxlength="50" style="width:100%; padding:12px; margin:10px 0; border-radius:8px; border:1px solid var(--pink-accent); background:rgba(255,255,255,0.1); color:var(--text-color);">
+                <!-- Campo nome do doador COM CONTADOR -->
+                <div style="position:relative; width:100%;">
+                    <input type="text" id="paypalDonorName" placeholder="Your name (optional)" maxlength="50" style="width:100%; padding:12px; margin:10px 0; border-radius:8px; border:1px solid var(--pink-accent); background:rgba(255,255,255,0.1); color:#ffffff; padding-right:60px;">
+                    <span class="char-counter" id="paypalNameCounter" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); font-size:12px; color:rgba(255,255,255,0.5); pointer-events:none;">0/50</span>
+                </div>
 
-                <!-- Campo mensagem personalizada -->
-                <input type="text" id="paypalDonorMessage" placeholder="Leave a message (optional) - Ex: Hi Nagila, I love your live!" maxlength="200" style="width:100%; padding:12px; margin:10px 0; border-radius:8px; border:1px solid var(--pink-accent); background:rgba(255,255,255,0.1); color:var(--text-color); font-size:14px;">
+                <!-- Campo mensagem personalizada COM CONTADOR -->
+                <div style="position:relative; width:100%;">
+                    <input type="text" id="paypalDonorMessage" placeholder="Leave a message (optional) - Ex: Hi Nagila, I love your live!" maxlength="200" style="width:100%; padding:12px; margin:10px 0; border-radius:8px; border:1px solid var(--pink-accent); background:rgba(255,255,255,0.1); color:#ffffff; font-size:14px; padding-right:70px;">
+                    <span class="char-counter" id="paypalMessageCounter" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); font-size:12px; color:rgba(255,255,255,0.5); pointer-events:none;">0/200</span>
+                </div>
 
                 <div class="value-control">
                     <button class="value-btn minus" aria-label="Decrease amount" onclick="changePaypalValue(-5)">−</button>
