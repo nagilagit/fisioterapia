@@ -658,32 +658,121 @@ function translatePage(lang) {
     const activeBtn = lang === 'english' ? 'englishBtn' : 'portugueseBtn';
     document.getElementById(activeBtn).classList.add('active');
     
-    const t = translationsData[lang];
+    // Dicionário de traduções
+    const translations = {
+        portuguese: {
+            bio: "Streamer • Fisioterapeuta • Criadora de Conteúdo",
+            live: "Assistir minhas Lives",
+            videos: "Vídeos Populares",
+            journey: "Minha Jornada",
+            ranking: "🏆 Ranking de Doadores",
+            support: "Seja um Apoiador",
+            contact: "Contato Profissional",
+            footer: "💖 Conteúdo diário no TikTok! 💖<br /> Live todos os dias às 20h",
+            pixModalTitle: "💖 Apoie meu trabalho",
+            pixModalDesc: "Digite o valor (mínimo R$1):",
+            paypalModalTitle: "💖 Apoie meu trabalho via PayPal",
+            paypalDesc: "Doação única:",
+            paypalButton: "Doar via PayPal",
+            paypalNote: "* Você será redirecionado para o site seguro do PayPal",
+            videosTitle: "🎥 Vídeos Populares",
+            journeyTitle: "🌟 Minha Jornada",
+            journeyContent: `<p>No TikTok, eu crio vídeos sobre diversos temas, mas meu foco principal é fazer lives para alegrar as pessoas, trazer energia positiva e diversão para o dia a dia.</p>
+                            <p>Gosto de usar essa plataforma para conectar com o público de forma autêntica e leve, sempre buscando espalhar boas vibrações.</p>
+                            <br>
+                            <p>Além do TikTok, sou fisioterapeuta e adoro estudar para me aprimorar tanto na minha profissão quanto em outras áreas da vida.</p>
+                            <p>Acho que o aprendizado constante é essencial para crescer e ajudar melhor quem precisa.</p>`,
+            rankingTitle: "🏆 Ranking de Doadores",
+            rankingLoading: "Carregando ranking..."
+        },
+        english: {
+            bio: "Streamer • Physiotherapist • Content Creator",
+            live: "Watch my Live Streams",
+            videos: "Popular Videos",
+            journey: "My Journey",
+            ranking: "🏆 Donor Ranking",
+            support: "Be a Supporter",
+            contact: "Professional Contact",
+            footer: "💖 Daily content on TikTok! 💖<br /> Live every day at 8PM",
+            pixModalTitle: "💖 Support my work",
+            pixModalDesc: "Enter amount (minimum R$1):",
+            paypalModalTitle: "💖 Support my work via PayPal",
+            paypalDesc: "One-time donation:",
+            paypalButton: "Donate via PayPal",
+            paypalNote: "* You will be redirected to PayPal's secure website",
+            videosTitle: "🎥 Popular Videos",
+            journeyTitle: "🌟 My Journey",
+            journeyContent: `<p>On TikTok, I create videos on various topics, but my main focus is doing lives to make people happy, bring positive energy and fun to everyday life.</p>
+                            <p>I like to use this platform to connect with the audience in an authentic and light way, always seeking to spread good vibes.</p>
+                            <br>
+                            <p>Besides TikTok, I'm a physiotherapist and I love studying to improve myself both in my profession and in other areas of life.</p>
+                            <p>I believe that constant learning is essential to grow and help those in need.</p>`,
+            rankingTitle: "🏆 Donor Ranking",
+            rankingLoading: "Loading ranking..."
+        }
+    };
     
-    const bioEl = document.querySelector('.bio');
-    if (bioEl) bioEl.textContent = t.bio;
+    const t = translations[lang];
     
-    const navLinks = document.querySelectorAll('nav ul li a');
-    const linkTexts = [t.live, t.videos, t.journey, '', t.contact];
-    navLinks.forEach((link, index) => {
-        if (linkTexts[index] && linkTexts[index] !== '') {
-            link.textContent = linkTexts[index];
+    // Traduz elementos com data-translate
+    document.querySelectorAll('[data-translate]').forEach(element => {
+        const key = element.getAttribute('data-translate');
+        if (t[key] !== undefined) {
+            if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                element.placeholder = t[key];
+            } else if (key === 'journeyContent') {
+                element.innerHTML = t[key];
+            } else {
+                element.textContent = t[key];
+            }
         }
     });
     
+    // Traduz especificamente os botões de suporte (já que têm dois elementos)
     const supportBtnPT = document.getElementById('supportButtonPT');
     const supportBtnEN = document.getElementById('supportButtonEN');
-    if (supportBtnPT) supportBtnPT.textContent = t.support;
-    if (supportBtnEN) supportBtnEN.textContent = t.support;
+    if (supportBtnPT && supportBtnEN) {
+        const supportText = t.support;
+        supportBtnPT.textContent = supportText;
+        supportBtnEN.textContent = supportText;
+    }
     
-    const footer = document.querySelector('footer');
-    if (footer) footer.innerHTML = t.footer;
-    
+    // Atualiza os modais
     const pixTitle = document.getElementById('pixModalTitle');
-    if (pixTitle) pixTitle.textContent = t.pixModalTitle;
     const pixDesc = document.getElementById('pixModalDesc');
+    if (pixTitle) pixTitle.textContent = t.pixModalTitle;
     if (pixDesc) pixDesc.textContent = t.pixModalDesc;
     
+    const paypalTitle = document.getElementById('paypalModalTitle');
+    const paypalDesc = document.querySelector('.donation-text');
+    const paypalButton = document.querySelector('.donate-btn');
+    const paypalNote = document.querySelector('.donation-note');
+    if (paypalTitle) paypalTitle.textContent = t.paypalModalTitle;
+    if (paypalDesc) paypalDesc.textContent = t.paypalDesc;
+    if (paypalButton) {
+        paypalButton.innerHTML = `<ion-icon name="logo-paypal"></ion-icon> ${t.paypalButton}`;
+    }
+    if (paypalNote) paypalNote.textContent = t.paypalNote;
+    
+    // Atualiza o modal de vídeos
+    const videosTitle = document.querySelector('#videosModal h3');
+    if (videosTitle) {
+        const closeBtn = videosTitle.querySelector('button');
+        videosTitle.textContent = t.videosTitle;
+        if (closeBtn) videosTitle.appendChild(closeBtn);
+    }
+    
+    // Atualiza o modal de jornada
+    const journeyTitle = document.querySelector('#journeyModal h3');
+    if (journeyTitle) journeyTitle.textContent = t.journeyTitle;
+    
+    // Atualiza o modal de ranking
+    const rankingTitle = document.querySelector('#rankingModal h3');
+    const rankingLoading = document.querySelector('#rankingModal [data-translate="rankingLoading"]');
+    if (rankingTitle) rankingTitle.textContent = t.rankingTitle;
+    if (rankingLoading) rankingLoading.textContent = t.rankingLoading;
+    
+    // Salva a preferência
     localStorage.setItem('preferredLanguage', lang);
 }
 

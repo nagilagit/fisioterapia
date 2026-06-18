@@ -63,7 +63,7 @@
             <img src="./frontend/nagila.jpeg" alt="Foto de Nagila Lima, criadora de conteúdo no TikTok" class="profile-img" width="120" height="120" />
 
             <p><strong>@Nagilalima22</strong></p>
-            <p class="bio">Streamer • Fisioterapeuta • Criadora de Conteúdo</p>
+            <p class="bio" data-translate="bio">Streamer • Fisioterapeuta • Criadora de Conteúdo</p>
 
             <div id="switch" role="switch" tabindex="0" aria-checked="false" aria-label="Alternar tema claro/escuro" onclick="toggleMode()" onkeydown="if(event.key === 'Enter' || event.key === ' ') toggleMode()">
                 <span class="switch-button"></span>
@@ -89,24 +89,31 @@
 
         <nav aria-label="Links principais">
             <ul>
-                <li>
-                    <a href="https://www.tiktok.com/@nagilalima22" target="_blank" rel="noopener noreferrer">Assistir minhas Lives</a>
-                </li>
-                <li>
-                    <a href="#" onclick="showVideosModal(); return false;">Vídeos Populares</a>
-                </li>
-                <li>
-                    <a href="#" onclick="showJourneyModal(); return false;">Minha Jornada</a>
-                </li>
-                <li>
-                    <a href="#" onclick="showRankingModal(); return false;">🏆 Ranking de Doadores</a>
-                </li>
+
+                <!-- SEJA UM APOIADOR em 1º lugar -->
                 <li class="language-dependent">
-                    <a href="#" id="supportButtonPT" onclick="showPixModal()" class="portuguese-visible">Seja um Apoiador</a>
-                    <a href="#" id="supportButtonEN" onclick="showPaypalModal()" class="english-visible">Be a Supporter</a>
+                    <a href="#" id="supportButtonPT" onclick="showPixModal()" class="portuguese-visible" data-translate="support">Seja um Apoiador</a>
+                    <a href="#" id="supportButtonEN" onclick="showPaypalModal()" class="english-visible" data-translate="support">Be a Supporter</a>
+                </li>
+                <!-- RANKING em 2º lugar -->
+                <li>
+                    <a href="#" onclick="showRankingModal(); return false;" data-translate="ranking">🏆 Ranking de Doadores</a>
+                </li>
+                
+                
+                
+                <!-- DEPOIS os outros -->
+                <li>
+                    <a href="https://www.tiktok.com/@nagilalima22" target="_blank" rel="noopener noreferrer" data-translate="live">Assistir minhas Lives</a>
                 </li>
                 <li>
-                    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=nagilalimanah@gmail.com" target="_blank" rel="noopener noreferrer">Contato Profissional</a>
+                    <a href="#" onclick="showVideosModal(); return false;" data-translate="videos">Vídeos Populares</a>
+                </li>
+                <li>
+                    <a href="#" onclick="showJourneyModal(); return false;" data-translate="journey">Minha Jornada</a>
+                </li>
+                <li>
+                    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=nagilalimanah@gmail.com" target="_blank" rel="noopener noreferrer" data-translate="contact">Contato Profissional</a>
                 </li>
             </ul>
         </nav>
@@ -123,7 +130,7 @@
             </a>
         </section>
 
-        <footer>
+        <footer data-translate="footer">
             💖 Conteúdo diário no TikTok! 💖<br /> Live todos os dias às 20h
         </footer>
     </main>
@@ -132,8 +139,8 @@
     <div id="pixModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="pixModalTitle" aria-describedby="pixModalDesc" tabindex="-1">
         <div class="modal-content">
             <button class="close-modal" aria-label="Fechar modal" onclick="hidePixModal()">&times;</button>
-            <h3 id="pixModalTitle">💖 Apoie meu trabalho</h3>
-            <p id="pixModalDesc">Digite o valor (mínimo R$1):</p>
+            <h3 id="pixModalTitle" data-translate="pixModalTitle">💖 Apoie meu trabalho</h3>
+            <p id="pixModalDesc" data-translate="pixModalDesc">Digite o valor (mínimo R$1):</p>
 
             <!-- Campo nome do doador -->
             <input type="text" id="pixDonorName" placeholder="Seu nome (opcional)" maxlength="50" style="width:100%; padding:12px; margin:10px 0; border-radius:8px; border:1px solid var(--pink-accent); background:rgba(255,255,255,0.1); color:var(--text-color);">
@@ -174,10 +181,10 @@
     <div id="paypalModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="paypalModalTitle" tabindex="-1">
         <div class="modal-content">
             <button class="close-modal" aria-label="Close modal" onclick="hidePaypalModal()">&times;</button>
-            <h3 id="paypalModalTitle">💖 Support my work via PayPal</h3>
+            <h3 id="paypalModalTitle" data-translate="paypalModalTitle">💖 Support my work via PayPal</h3>
 
             <div class="paypal-donation">
-                <p class="donation-text">One-time donation:</p>
+                <p class="donation-text" data-translate="paypalDesc">One-time donation:</p>
 
                 <!-- Campo nome do doador -->
                 <input type="text" id="paypalDonorName" placeholder="Your name (optional)" maxlength="50" style="width:100%; padding:12px; margin:10px 0; border-radius:8px; border:1px solid var(--pink-accent); background:rgba(255,255,255,0.1); color:var(--text-color);">
@@ -196,12 +203,12 @@
                     <input type="hidden" name="currency_code" value="BRL">
                     <input type="hidden" name="amount" id="paypalAmount" value="10">
                     <input type="hidden" name="item_name" id="paypalItemName" value="Donation for Nagila Lima">
-                    <button type="submit" class="donate-btn">
+                    <button type="submit" class="donate-btn" data-translate="paypalButton">
                         <ion-icon name="logo-paypal"></ion-icon> Donate via PayPal
                     </button>
                 </form>
 
-                <p class="donation-note">* You will be redirected to PayPal's secure website</p>
+                <p class="donation-note" data-translate="paypalNote">* You will be redirected to PayPal's secure website</p>
             </div>
         </div>
     </div>
@@ -210,7 +217,7 @@
     <div class="modamodal" id="videosModalContainer">
         <div id="videosModal" class="modal" role="dialog" aria-modal="true" tabindex="-1">
             <div class="modal-content videos-content">
-                <h3>🎥 Vídeos Populares <button onclick="fecharmodal()" style="float:right; background:transparent; border:none; color:var(--text-color); font-size:20px; cursor:pointer;">x</button></h3>
+                <h3 data-translate="videosTitle">🎥 Vídeos Populares <button onclick="fecharmodal()" style="float:right; background:transparent; border:none; color:var(--text-color); font-size:20px; cursor:pointer;">x</button></h3>
 
                 <div class="video-container-wrapper">
                     <div class="video-item" data-video-id="7502111719888669958">
@@ -231,8 +238,8 @@
     <div id="journeyModal" class="modal" style="display:none;">
         <div class="modal-content" style="max-width:600px;">
             <button class="close-modal" onclick="hideJourneyModal()">&times;</button>
-            <h3>🌟 Minha Jornada</h3>
-            <div class="text-content">
+            <h3 data-translate="journeyTitle">🌟 Minha Jornada</h3>
+            <div class="text-content" data-translate="journeyContent">
                 <p>No TikTok, eu crio vídeos sobre diversos temas, mas meu foco principal é fazer lives para alegrar as pessoas, trazer energia positiva e diversão para o dia a dia.</p>
                 <p>Gosto de usar essa plataforma para conectar com o público de forma autêntica e leve, sempre buscando espalhar boas vibrações.</p>
                 <br>
@@ -246,9 +253,9 @@
     <div id="rankingModal" class="modal" style="display:none;">
         <div class="modal-content" style="max-width:500px;">
             <button class="close-modal" onclick="hideRankingModal()">&times;</button>
-            <h3>🏆 Ranking de Doadores</h3>
+            <h3 data-translate="rankingTitle">🏆 Ranking de Doadores</h3>
             <div id="rankingContent" style="margin-top:20px;">
-                <p style="text-align:center; opacity:0.7;">Carregando ranking...</p>
+                <p style="text-align:center; opacity:0.7;" data-translate="rankingLoading">Carregando ranking...</p>
             </div>
         </div>
     </div>
