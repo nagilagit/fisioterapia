@@ -1,5 +1,5 @@
 /* ============================================
-   RESET E VARIÁVEIS - TEMA CLARO PREMIUM
+   RESET E VARIÁVEIS - TEMA CLARO (DEFAULT)
    ============================================ */
 * {
     margin: 0;
@@ -8,6 +8,9 @@
 }
 
 :root {
+    /* Forçar suporte a tema claro/escuro */
+    color-scheme: light dark;
+
     /* ===== CORES PRINCIPAIS ===== */
     --primary: #ec4899;
     --primary-light: #f472b6;
@@ -28,27 +31,27 @@
     --warning: #f59e0b;
     --warning-light: #fef3c7;
     
-    /* ===== FUNDO ===== */
+    /* ===== FUNDO - TEMA CLARO ===== */
     --bg-body: #f5f0fa;
     --bg-card: #ffffff;
     --bg-input: #f8f4fc;
     --bg-hover: #fdf2f8;
     --bg-overlay: rgba(255, 255, 255, 0.85);
     
-    /* ===== TEXTO ===== */
+    /* ===== TEXTO - TEMA CLARO ===== */
     --text-primary: #1a1a2e;
     --text-secondary: #6b7280;
     --text-muted: #9ca3af;
     --text-light: #d1d5db;
     --text-white: #ffffff;
     
-    /* ===== BORDAS ===== */
+    /* ===== BORDAS - TEMA CLARO ===== */
     --border-light: #e8e4ed;
     --border-input: #e5e0ea;
     --border-focus: #ec4899;
     --border-card: rgba(255, 255, 255, 0.6);
     
-    /* ===== SOMBRAS ===== */
+    /* ===== SOMBRAS - TEMA CLARO ===== */
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
     --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
     --shadow-lg: 0 12px 48px rgba(0, 0, 0, 0.08);
@@ -68,6 +71,445 @@
 }
 
 /* ============================================
+   TEMA ESCURO (ATIVADO AUTOMATICAMENTE)
+   ============================================ */
+@media (prefers-color-scheme: dark) {
+    :root {
+        /* ===== FUNDO - TEMA ESCURO ===== */
+        --bg-body: #0f0f1a;
+        --bg-card: #1a1a2e;
+        --bg-input: rgba(255, 255, 255, 0.04);
+        --bg-hover: rgba(236, 72, 153, 0.08);
+        --bg-overlay: rgba(15, 15, 26, 0.92);
+        
+        /* ===== TEXTO - TEMA ESCURO ===== */
+        --text-primary: #f1f1f7;
+        --text-secondary: rgba(255, 255, 255, 0.7);
+        --text-muted: rgba(255, 255, 255, 0.4);
+        --text-light: rgba(255, 255, 255, 0.2);
+        --text-white: #ffffff;
+        
+        /* ===== BORDAS - TEMA ESCURO ===== */
+        --border-light: rgba(255, 255, 255, 0.06);
+        --border-input: rgba(255, 255, 255, 0.08);
+        --border-card: rgba(255, 255, 255, 0.04);
+        
+        /* ===== SOMBRAS - TEMA ESCURO ===== */
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+        --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
+        --shadow-lg: 0 12px 48px rgba(0, 0, 0, 0.4);
+        --shadow-xl: 0 24px 80px rgba(0, 0, 0, 0.5);
+        --shadow-glow: 0 0 30px rgba(236, 72, 153, 0.08);
+        --shadow-focus: 0 0 0 4px rgba(236, 72, 153, 0.15);
+    }
+
+    /* ===== CORREÇÕES ESPECÍFICAS DO TEMA ESCURO ===== */
+    body::before {
+        opacity: 0.3;
+    }
+
+    .donation-container {
+        background: var(--bg-card);
+        border-color: var(--border-card);
+    }
+
+    .donation-container::before {
+        opacity: 0.3;
+    }
+
+    .profile-name {
+        color: var(--text-primary);
+    }
+
+    .profile-bio {
+        color: var(--text-secondary);
+    }
+
+    .profile-avatar::before {
+        opacity: 0.15;
+    }
+
+    .profile-avatar::after {
+        opacity: 0.4;
+    }
+
+    .profile-avatar:hover::before {
+        opacity: 0.3;
+    }
+
+    .donor-counter {
+        background: var(--bg-input);
+        border-color: var(--border-input);
+    }
+
+    .donor-counter:hover {
+        border-color: var(--primary-light);
+        box-shadow: var(--shadow-md);
+    }
+
+    .donor-label {
+        color: var(--text-secondary);
+    }
+
+    .donor-number {
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .section-title h2 {
+        color: var(--text-primary);
+    }
+
+    .section-title p {
+        color: var(--text-secondary);
+    }
+
+    .form-group label {
+        color: var(--text-secondary);
+    }
+
+    .input-wrapper {
+        background: var(--bg-input);
+        border-color: var(--border-input);
+    }
+
+    .input-wrapper:focus-within {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: var(--primary);
+        box-shadow: var(--shadow-focus);
+    }
+
+    .input-wrapper input {
+        color: var(--text-primary);
+    }
+
+    .input-wrapper input::placeholder {
+        color: var(--text-muted);
+    }
+
+    .char-counter {
+        color: var(--text-muted);
+        background: var(--bg-input);
+    }
+
+    .input-wrapper:focus-within .char-counter {
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--text-secondary);
+    }
+
+    .char-counter.warning {
+        color: var(--warning);
+        background: rgba(245, 158, 11, 0.15);
+    }
+
+    .char-counter.danger {
+        color: var(--error);
+        background: rgba(239, 68, 68, 0.15);
+    }
+
+    .form-hint {
+        color: var(--text-muted);
+    }
+
+    .form-hint.success {
+        color: var(--success);
+    }
+
+    .value-control {
+        background: var(--bg-input);
+        border-color: var(--border-input);
+    }
+
+    .value-control:focus-within {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: transparent;
+        box-shadow: var(--shadow-focus);
+    }
+
+    .value-btn {
+        color: var(--text-muted);
+    }
+
+    .value-btn:hover {
+        color: var(--primary-light);
+    }
+
+    .value-btn:hover::before {
+        opacity: 0.12;
+    }
+
+    .value-btn:active::before {
+        opacity: 0.2;
+    }
+
+    .value-btn:hover svg {
+        stroke: var(--primary-light);
+    }
+
+    .value-display {
+        background: rgba(255, 255, 255, 0.03);
+    }
+
+    .value-control:focus-within .value-display {
+        background: rgba(255, 255, 255, 0.06);
+    }
+
+    .currency {
+        color: var(--text-secondary);
+    }
+
+    .value-control:focus-within .currency {
+        color: var(--primary-light);
+    }
+
+    .value-input {
+        color: var(--text-primary);
+    }
+
+    .value-input:focus {
+        color: var(--primary-light);
+    }
+
+    .value-display::after {
+        background: var(--primary-gradient);
+    }
+
+    .quick-value {
+        border-color: var(--border-input);
+        color: var(--text-secondary);
+    }
+
+    .quick-value:hover {
+        border-color: var(--primary-light);
+        color: var(--text-primary);
+        background: rgba(236, 72, 153, 0.06);
+        box-shadow: 0 4px 16px rgba(236, 72, 153, 0.04);
+    }
+
+    .quick-value.active {
+        border-color: var(--primary);
+        color: var(--primary-light);
+        background: rgba(236, 72, 153, 0.12);
+        box-shadow: 0 4px 20px rgba(236, 72, 153, 0.08);
+    }
+
+    .quick-value.active::after {
+        opacity: 0.1;
+    }
+
+    .btn-primary {
+        background: var(--primary-gradient);
+        background-size: 200% 200%;
+    }
+
+    .btn-primary::before {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    }
+
+    .btn-primary:hover {
+        box-shadow: 0 12px 40px rgba(236, 72, 153, 0.25);
+    }
+
+    .btn-primary:disabled {
+        opacity: 0.4;
+    }
+
+    .divider-line {
+        background: linear-gradient(to right, transparent, var(--border-input));
+    }
+
+    .divider-line:last-child {
+        background: linear-gradient(to left, transparent, var(--border-input));
+    }
+
+    .divider-text {
+        color: var(--text-muted);
+        background: var(--bg-card);
+    }
+
+    .payment-status {
+        background: var(--bg-input);
+        border-color: var(--border-input);
+        color: var(--text-secondary);
+    }
+
+    .payment-status.success {
+        border-color: var(--success);
+        background: rgba(16, 185, 129, 0.12);
+        color: var(--success);
+    }
+
+    .payment-status.error {
+        border-color: var(--error);
+        background: rgba(239, 68, 68, 0.12);
+        color: var(--error);
+    }
+
+    .qr-container {
+        background: var(--bg-input);
+        border-color: var(--border-input);
+    }
+
+    .qr-container:hover {
+        border-color: rgba(236, 72, 153, 0.15);
+    }
+
+    .qr-container .qr-code canvas,
+    .qr-container .qr-code img {
+        background: #ffffff;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .qr-container .qr-code img:hover {
+        box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
+    }
+
+    .qr-loader {
+        background: rgba(26, 26, 46, 0.85);
+    }
+
+    .loader-spinner {
+        border-color: rgba(236, 72, 153, 0.15);
+        border-top-color: var(--primary);
+    }
+
+    .pix-code-label {
+        color: var(--text-muted);
+    }
+
+    .pix-code-box {
+        background: var(--bg-input);
+        border-color: var(--border-input);
+    }
+
+    .pix-code-box:hover {
+        border-color: var(--primary-light);
+        background: rgba(255, 255, 255, 0.06);
+    }
+
+    .pix-code-text {
+        color: var(--text-secondary);
+    }
+
+    .copy-btn {
+        color: var(--text-muted);
+    }
+
+    .copy-btn:hover {
+        background: rgba(236, 72, 153, 0.12);
+        color: var(--primary-light);
+    }
+
+    .copy-btn.copied {
+        color: var(--success);
+        background: rgba(16, 185, 129, 0.15);
+    }
+
+    .btn-secondary {
+        border-color: var(--border-input);
+        color: var(--text-secondary);
+    }
+
+    .btn-secondary:hover {
+        border-color: var(--primary-light);
+        color: var(--primary-light);
+        background: rgba(236, 72, 153, 0.06);
+    }
+
+    .donation-footer {
+        border-top-color: var(--border-input);
+    }
+
+    .donation-footer p {
+        color: var(--text-muted);
+    }
+
+    .donation-footer span {
+        color: var(--text-muted);
+        opacity: 0.5;
+    }
+
+    .copy-feedback {
+        background: rgba(0, 0, 0, 0.9);
+        color: var(--text-white);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .submit-feedback {
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+    .submit-feedback-content {
+        background: var(--bg-card);
+        border: 1px solid var(--border-card);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .submit-text {
+        color: var(--text-primary);
+    }
+
+    .submit-text small {
+        color: var(--text-secondary);
+    }
+
+    .toast {
+        background: var(--bg-card);
+        border-color: var(--border-card);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .toast.success {
+        border-left-color: var(--success);
+    }
+
+    .toast.error {
+        border-left-color: var(--error);
+    }
+
+    .toast-content strong {
+        color: var(--text-primary);
+    }
+
+    .toast-content p {
+        color: var(--text-secondary);
+    }
+
+    .loading-overlay {
+        background: rgba(15, 15, 26, 0.92);
+        backdrop-filter: blur(20px);
+    }
+
+    .loading-spinner {
+        border-color: rgba(236, 72, 153, 0.15);
+        border-top-color: var(--primary);
+    }
+
+    .loading-overlay p {
+        color: var(--text-secondary);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: rgba(236, 72, 153, 0.3);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgba(236, 72, 153, 0.5);
+    }
+
+    ::selection {
+        background: rgba(236, 72, 153, 0.3);
+        color: var(--text-white);
+    }
+
+    :focus-visible {
+        outline-color: var(--primary);
+    }
+}
+
+/* ============================================
    BODY
    ============================================ */
 body {
@@ -81,6 +523,7 @@ body {
     color: var(--text-primary);
     position: relative;
     overflow-x: hidden;
+    transition: background 0.3s ease, color 0.3s ease;
 }
 
 body::before {
@@ -93,6 +536,7 @@ body::before {
         radial-gradient(ellipse at 50% 50%, rgba(236, 72, 153, 0.03) 0%, transparent 70%);
     pointer-events: none;
     z-index: 0;
+    transition: opacity 0.3s ease;
 }
 
 /* ============================================
@@ -114,7 +558,7 @@ body::before {
     animation: containerIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     position: relative;
     overflow: hidden;
-    transition: var(--transition);
+    transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 /* Gradiente sutil no topo */
@@ -128,6 +572,7 @@ body::before {
     background: var(--primary-gradient);
     border-radius: var(--radius) var(--radius) 0 0;
     opacity: 0.5;
+    transition: opacity 0.3s ease;
 }
 
 @keyframes containerIn {
@@ -154,83 +599,70 @@ body::before {
 .profile-avatar {
     position: relative;
     display: inline-block;
+    padding: 4px;
+    border-radius: 50%;
+    background: transparent;
+    box-shadow: 
+        0 0 30px rgba(236, 72, 153, 0.2),
+        inset 0 0 30px rgba(236, 72, 153, 0.05);
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .profile-avatar::before {
     content: '';
     position: absolute;
-    inset: -6px;
+    inset: -3px;
     border-radius: 50%;
-    background: var(--primary-gradient);
-    opacity: 0.15;
-    animation: avatarGlow 3s ease-in-out infinite;
+    background: linear-gradient(135deg, #ec4899, #f472b6, #8b5cf6, #ec4899);
+    background-size: 400% 400%;
+    animation: gradientRotate 3s ease-in-out infinite;
+    z-index: -1;
+    filter: blur(15px);
+    opacity: 0.4;
+    transition: opacity 0.4s ease;
 }
 
-@keyframes avatarGlow {
-    0%, 100% { transform: scale(1); opacity: 0.15; }
-    50% { transform: scale(1.08); opacity: 0.25; }
+.profile-avatar::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ec4899, #f472b6, #8b5cf6, #ec4899);
+    background-size: 400% 400%;
+    animation: gradientRotate 3s ease-in-out infinite reverse;
+    z-index: -1;
+    opacity: 0.8;
+}
+
+.profile-avatar:hover {
+    transform: scale(1.05);
+}
+
+.profile-avatar:hover::before {
+    opacity: 0.8;
+    filter: blur(25px);
 }
 
 .profile-avatar img {
-    width: 100px;
-    height: 100px;
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
     object-fit: cover;
-    border: 3px solid white;
-    box-shadow: 0 8px 32px rgba(236, 72, 153, 0.15);
-    transition: var(--transition);
+    border: 3px solid var(--bg-card);
+    display: block;
     position: relative;
     z-index: 1;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s ease;
 }
 
-.profile-avatar img:hover {
-    transform: scale(1.05);
-    box-shadow: 0 12px 48px rgba(236, 72, 153, 0.25);
+.profile-avatar:hover img {
+    transform: scale(1.02);
 }
 
-.live-badge {
-    position: absolute;
-    bottom: 0px;
-    right: -6px;
-    background: linear-gradient(135deg, #ef4444, #dc2626);
-    color: white;
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    padding: 4px 12px;
-    border-radius: 20px;
-    border: 2.5px solid white;
-    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    animation: livePulse 2s ease-in-out infinite;
-}
-
-.live-badge::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: white;
-    animation: dotBlink 1s ease-in-out infinite;
-}
-
-@keyframes dotBlink {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.2; transform: scale(0.6); }
-}
-
-@keyframes livePulse {
-    0%, 100% { 
-        box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
-        transform: scale(1);
-    }
-    50% { 
-        box-shadow: 0 4px 32px rgba(239, 68, 68, 0.5);
-        transform: scale(1.02);
-    }
+@keyframes gradientRotate {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 .profile-name {
@@ -239,6 +671,7 @@ body::before {
     color: var(--text-primary);
     margin-top: 14px;
     letter-spacing: -0.5px;
+    transition: color 0.3s ease;
 }
 
 .profile-bio {
@@ -246,6 +679,7 @@ body::before {
     color: var(--text-secondary);
     font-weight: 400;
     margin-top: 2px;
+    transition: color 0.3s ease;
 }
 
 /* ============================================
@@ -261,7 +695,7 @@ body::before {
     border: 1px solid var(--border-input);
     border-radius: 60px;
     margin-bottom: 28px;
-    transition: var(--transition);
+    transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .donor-counter:hover {
@@ -287,6 +721,7 @@ body::before {
     font-size: 13px;
     color: var(--text-secondary);
     font-weight: 500;
+    transition: color 0.3s ease;
 }
 
 .donor-number {
@@ -326,6 +761,7 @@ body::before {
     font-weight: 700;
     color: var(--text-primary);
     letter-spacing: -0.3px;
+    transition: color 0.3s ease;
 }
 
 .section-title p {
@@ -333,6 +769,7 @@ body::before {
     color: var(--text-secondary);
     font-weight: 400;
     margin-top: 3px;
+    transition: color 0.3s ease;
 }
 
 /* ============================================
@@ -357,6 +794,7 @@ body::before {
     font-weight: 600;
     color: var(--text-secondary);
     letter-spacing: 0.2px;
+    transition: color 0.3s ease;
 }
 
 /* INPUT WRAPPER - CANTOS ARREDONDADOS */
@@ -367,13 +805,13 @@ body::before {
     background: var(--bg-input);
     border: 2px solid var(--border-input);
     border-radius: var(--radius-sm);
-    transition: var(--transition);
+    transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
     overflow: hidden;
 }
 
 .input-wrapper:focus-within {
     border-color: var(--primary);
-    background: white;
+    background: var(--bg-card);
     box-shadow: var(--shadow-focus);
 }
 
@@ -388,11 +826,13 @@ body::before {
     font-family: var(--font);
     font-weight: 400;
     min-height: 54px;
+    transition: color 0.3s ease;
 }
 
 .input-wrapper input::placeholder {
     color: var(--text-muted);
     font-weight: 300;
+    transition: color 0.3s ease;
 }
 
 /* CHAR COUNTER */
@@ -403,7 +843,7 @@ body::before {
     font-weight: 500;
     color: var(--text-muted);
     pointer-events: none;
-    transition: var(--transition);
+    transition: background 0.3s ease, color 0.3s ease;
     background: var(--bg-input);
     padding: 2px 10px;
     border-radius: 20px;
@@ -411,7 +851,7 @@ body::before {
 }
 
 .input-wrapper:focus-within .char-counter {
-    background: white;
+    background: var(--bg-card);
     opacity: 1;
 }
 
@@ -431,7 +871,7 @@ body::before {
     color: var(--text-muted);
     font-weight: 300;
     padding-left: 4px;
-    transition: var(--transition);
+    transition: color 0.3s ease;
 }
 
 .form-hint.success {
@@ -444,59 +884,141 @@ body::before {
 .value-control {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
     background: var(--bg-input);
     border: 2px solid var(--border-input);
-    border-radius: var(--radius-sm);
-    padding: 4px;
-    transition: var(--transition);
+    border-radius: var(--radius-md);
+    padding: 6px;
+    transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    animation: valueControlIn 0.4s ease;
+}
+
+/* Efeito de brilho ao focar */
+.value-control::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: var(--radius-md);
+    background: var(--primary-gradient);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
 }
 
 .value-control:focus-within {
-    border-color: var(--primary);
-    background: white;
-    box-shadow: var(--shadow-focus);
+    border-color: transparent;
+    background: var(--bg-card);
+    box-shadow: 
+        0 0 0 4px rgba(236, 72, 153, 0.1),
+        0 8px 30px rgba(236, 72, 153, 0.06);
 }
 
+.value-control:focus-within::before {
+    opacity: 0.3;
+}
+
+@keyframes valueControlIn {
+    from {
+        opacity: 0;
+        transform: scale(0.96) translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* ===== BOTÕES DE VALOR ===== */
 .value-btn {
     width: 48px;
     height: 48px;
     border: none;
-    border-radius: var(--radius-xs);
+    border-radius: var(--radius-sm);
     background: transparent;
-    color: var(--text-secondary);
+    color: var(--text-muted);
     cursor: pointer;
-    transition: var(--transition);
+    transition: background 0.3s ease, color 0.3s ease, transform 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+    font-size: 20px;
+    font-weight: 300;
+}
+
+/* Fundo sutil ao passar o mouse */
+.value-btn::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border-radius: var(--radius-xs);
+    background: var(--primary-gradient);
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .value-btn:hover {
-    background: var(--primary-lighter);
     color: var(--primary);
     transform: scale(1.05);
+}
+
+.value-btn:hover::before {
+    opacity: 0.08;
 }
 
 .value-btn:active {
     transform: scale(0.92);
 }
 
+.value-btn:active::before {
+    opacity: 0.15;
+}
+
+/* Ícones SVG nos botões */
+.value-btn svg {
+    position: relative;
+    z-index: 1;
+    transition: stroke 0.3s ease;
+}
+
+.value-btn:hover svg {
+    stroke: var(--primary);
+}
+
+/* ===== DISPLAY DO VALOR ===== */
 .value-display {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 2px;
-    padding: 0 8px;
+    gap: 4px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: var(--radius-sm);
+    min-height: 52px;
+    position: relative;
+    transition: background 0.3s ease;
 }
 
+.value-control:focus-within .value-display {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+/* Moeda */
 .currency {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 600;
     color: var(--text-secondary);
+    transition: color 0.3s ease;
 }
 
+.value-control:focus-within .currency {
+    color: var(--primary);
+}
+
+/* Input do valor */
 .value-input {
     width: 80px;
     background: transparent;
@@ -507,8 +1029,16 @@ body::before {
     font-weight: 700;
     text-align: center;
     font-family: var(--font);
+    padding: 4px 0;
+    transition: color 0.3s ease;
+    letter-spacing: -0.5px;
 }
 
+.value-input:focus {
+    color: var(--primary);
+}
+
+/* Remove as setas do input number */
 .value-input::-webkit-inner-spin-button,
 .value-input::-webkit-outer-spin-button {
     -webkit-appearance: none;
@@ -519,34 +1049,72 @@ body::before {
     -moz-appearance: textfield;
 }
 
-/* QUICK VALUES - CANTOS ARREDONDADOS */
+/* Linha animada abaixo do valor */
+.value-display::after {
+    content: '';
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 2px;
+    background: var(--primary-gradient);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+.value-control:focus-within .value-display::after {
+    width: 60%;
+}
+
+/* ============================================
+   VALORES RÁPIDOS - VERSÃO PREMIUM
+   ============================================ */
 .quick-values {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
+    margin-top: 8px;
 }
 
 .quick-value {
     flex: 1;
-    min-width: 48px;
-    padding: 9px 0;
+    min-width: 52px;
+    padding: 10px 0;
     border: 2px solid var(--border-input);
     border-radius: var(--radius-sm);
     background: transparent;
     color: var(--text-secondary);
     font-size: 13px;
-    font-weight: 500;
+    font-weight: 600;
     font-family: var(--font);
     cursor: pointer;
-    transition: var(--transition);
+    transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
     text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Efeito de fundo gradiente nos valores rápidos */
+.quick-value::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--primary-gradient);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: var(--radius-sm);
 }
 
 .quick-value:hover {
     border-color: var(--primary-light);
     color: var(--text-primary);
-    background: var(--primary-lighter);
     transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(236, 72, 153, 0.08);
+}
+
+.quick-value:hover::before {
+    opacity: 0.04;
 }
 
 .quick-value:active {
@@ -555,9 +1123,31 @@ body::before {
 
 .quick-value.active {
     border-color: var(--primary);
-    background: var(--primary-lighter);
     color: var(--primary);
-    box-shadow: 0 0 20px rgba(236, 72, 153, 0.08);
+    background: var(--primary-lighter);
+    box-shadow: 0 4px 20px rgba(236, 72, 153, 0.12);
+    transform: translateY(-2px);
+}
+
+.quick-value.active::before {
+    opacity: 0.06;
+}
+
+/* Efeito de "pulse" no valor ativo */
+.quick-value.active::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: var(--radius-sm);
+    background: var(--primary-gradient);
+    opacity: 0.15;
+    z-index: -1;
+    animation: pulseBorder 2s ease-in-out infinite;
+}
+
+@keyframes pulseBorder {
+    0%, 100% { opacity: 0.15; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(1.02); }
 }
 
 /* ============================================
@@ -575,7 +1165,7 @@ body::before {
     font-weight: 700;
     font-family: var(--font);
     cursor: pointer;
-    transition: var(--transition);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
     margin-top: 4px;
     position: relative;
     overflow: hidden;
@@ -588,7 +1178,7 @@ body::before {
     inset: 0;
     background: linear-gradient(135deg, var(--primary-dark), var(--primary));
     opacity: 0;
-    transition: var(--transition);
+    transition: opacity 0.3s ease;
     border-radius: var(--radius-sm);
 }
 
@@ -660,6 +1250,7 @@ body::before {
     height: 1px;
     background: linear-gradient(to right, transparent, var(--border-input));
     border-radius: 1px;
+    transition: background 0.3s ease;
 }
 
 .divider-line:last-child {
@@ -675,6 +1266,7 @@ body::before {
     white-space: nowrap;
     background: var(--bg-card);
     padding: 0 12px;
+    transition: color 0.3s ease, background 0.3s ease;
 }
 
 /* PAYMENT STATUS - CANTOS ARREDONDADOS */
@@ -690,7 +1282,7 @@ body::before {
     background: var(--bg-input);
     border: 1px solid var(--border-input);
     margin-bottom: 18px;
-    transition: var(--transition);
+    transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 .payment-status .status-dot {
@@ -698,7 +1290,7 @@ body::before {
     height: 8px;
     border-radius: 50%;
     flex-shrink: 0;
-    transition: var(--transition);
+    transition: background 0.3s ease;
 }
 
 .payment-status .status-dot.pending {
@@ -743,7 +1335,7 @@ body::before {
     border-radius: var(--radius-md);
     min-height: 240px;
     margin-bottom: 18px;
-    transition: var(--transition);
+    transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .qr-container:hover {
@@ -762,10 +1354,10 @@ body::before {
     width: 200px !important;
     height: 200px !important;
     border-radius: var(--radius-sm);
-    background: white;
+    background: #ffffff;
     padding: 16px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
-    transition: var(--transition);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .qr-container .qr-code img:hover {
@@ -780,9 +1372,10 @@ body::before {
     display: none;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.8);
+    background: var(--bg-overlay);
     backdrop-filter: blur(8px);
     border-radius: var(--radius-md);
+    transition: background 0.3s ease;
 }
 
 .qr-loader.active {
@@ -814,6 +1407,7 @@ body::before {
     display: block;
     margin-bottom: 6px;
     letter-spacing: 0.5px;
+    transition: color 0.3s ease;
 }
 
 .pix-code-box {
@@ -824,13 +1418,13 @@ body::before {
     background: var(--bg-input);
     border: 2px solid var(--border-input);
     border-radius: var(--radius-sm);
-    transition: var(--transition);
+    transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
     cursor: pointer;
 }
 
 .pix-code-box:hover {
     border-color: var(--primary-light);
-    background: white;
+    background: var(--bg-card);
     box-shadow: var(--shadow-sm);
 }
 
@@ -843,6 +1437,7 @@ body::before {
     line-height: 1.5;
     max-height: 60px;
     overflow-y: auto;
+    transition: color 0.3s ease;
 }
 
 /* COPY BUTTON - CANTOS ARREDONDADOS */
@@ -859,7 +1454,7 @@ body::before {
     font-weight: 500;
     font-family: var(--font);
     cursor: pointer;
-    transition: var(--transition);
+    transition: background 0.3s ease, color 0.3s ease, transform 0.2s ease;
     flex-shrink: 0;
 }
 
@@ -890,7 +1485,7 @@ body::before {
     font-weight: 500;
     font-family: var(--font);
     cursor: pointer;
-    transition: var(--transition);
+    transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
 }
 
 .btn-secondary:hover {
@@ -978,12 +1573,13 @@ body::before {
 }
 
 .submit-feedback-content {
-    background: white;
+    background: var(--bg-card);
     padding: 40px 48px;
     border-radius: var(--radius);
     box-shadow: var(--shadow-xl);
     text-align: center;
     animation: feedbackPop 0.5s var(--transition-bounce);
+    transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
 .submit-icon {
@@ -1002,6 +1598,7 @@ body::before {
     font-size: 20px;
     font-weight: 700;
     color: var(--text-primary);
+    transition: color 0.3s ease;
 }
 
 .submit-text small {
@@ -1010,6 +1607,7 @@ body::before {
     font-weight: 400;
     color: var(--text-secondary);
     margin-top: 4px;
+    transition: color 0.3s ease;
 }
 
 /* ============================================
@@ -1022,6 +1620,7 @@ body::before {
     text-align: center;
     position: relative;
     z-index: 1;
+    transition: border-color 0.3s ease;
 }
 
 .donation-footer p {
@@ -1032,6 +1631,7 @@ body::before {
     align-items: center;
     justify-content: center;
     gap: 6px;
+    transition: color 0.3s ease;
 }
 
 .donation-footer p .footer-icon {
@@ -1045,6 +1645,7 @@ body::before {
     margin-top: 4px;
     font-weight: 300;
     opacity: 0.7;
+    transition: color 0.3s ease, opacity 0.3s ease;
 }
 
 /* ============================================
@@ -1061,6 +1662,7 @@ body::before {
     flex-direction: column;
     gap: 20px;
     z-index: 9999;
+    transition: background 0.3s ease;
 }
 
 .loading-overlay.active {
@@ -1081,6 +1683,7 @@ body::before {
     font-size: 16px;
     color: var(--text-secondary);
     font-weight: 400;
+    transition: color 0.3s ease;
 }
 
 @keyframes fadeIn {
@@ -1100,12 +1703,13 @@ body::before {
     gap: 14px;
     padding: 18px 22px;
     border-radius: var(--radius-sm);
-    background: white;
+    background: var(--bg-card);
     border: 1px solid var(--border-card);
     box-shadow: var(--shadow-xl);
     max-width: 380px;
     z-index: 10000;
     animation: slideIn 0.5s var(--transition-bounce);
+    transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .toast.success {
@@ -1132,6 +1736,7 @@ body::before {
     font-size: 15px;
     font-weight: 600;
     color: var(--text-primary);
+    transition: color 0.3s ease;
 }
 
 .toast-content p {
@@ -1139,6 +1744,7 @@ body::before {
     color: var(--text-secondary);
     font-weight: 400;
     margin-top: 2px;
+    transition: color 0.3s ease;
 }
 
 @keyframes slideIn {
@@ -1173,8 +1779,8 @@ body::before {
     }
 
     .profile-avatar img {
-        width: 80px;
-        height: 80px;
+        width: 90px;
+        height: 90px;
     }
 
     .profile-name {
@@ -1193,20 +1799,34 @@ body::before {
         min-width: 28px;
     }
 
+    .value-btn {
+        width: 44px;
+        height: 44px;
+    }
+
+    .value-btn svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .value-display {
+        padding: 6px 10px;
+        min-height: 46px;
+    }
+
     .value-input {
         font-size: 24px;
         width: 60px;
     }
 
-    .value-btn {
-        width: 42px;
-        height: 42px;
+    .currency {
+        font-size: 16px;
     }
 
     .quick-value {
+        padding: 8px 0;
         font-size: 12px;
-        padding: 7px 0;
-        min-width: 40px;
+        min-width: 44px;
     }
 
     .qr-container {
@@ -1263,377 +1883,14 @@ body::before {
     }
 
     .profile-avatar img {
-        width: 68px;
-        height: 68px;
+        width: 75px;
+        height: 75px;
     }
 
     .profile-name {
         font-size: 18px;
     }
 
-    .value-input {
-        font-size: 20px;
-        width: 50px;
-    }
-
-    .value-btn {
-        width: 36px;
-        height: 36px;
-    }
-
-    .quick-values {
-        gap: 5px;
-    }
-
-    .quick-value {
-        font-size: 11px;
-        padding: 5px 0;
-        min-width: 34px;
-    }
-
-    .qr-container .qr-code canvas,
-    .qr-container .qr-code img {
-        width: 130px !important;
-        height: 130px !important;
-        padding: 10px;
-    }
-
-    .donor-number {
-        font-size: 18px;
-    }
-}
-
-/* ============================================
-   UTILITÁRIOS
-   ============================================ */
-::-webkit-scrollbar {
-    width: 5px;
-}
-
-::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--primary-light);
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--primary);
-}
-
-::selection {
-    background: var(--primary-light);
-    color: white;
-}
-
-:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
-}
-
-input {
-    font-size: 16px !important;
-}
-/* ============================================
-   CONTROLE DE VALOR - VERSÃO PREMIUM
-   ============================================ */
-
-/* Container principal */
-.value-control {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    background: var(--bg-input);
-    border: 2px solid var(--border-input);
-    border-radius: var(--radius-md);
-    padding: 6px;
-    transition: var(--transition);
-    position: relative;
-    overflow: hidden;
-}
-
-/* Efeito de brilho ao focar */
-.value-control::before {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    border-radius: var(--radius-md);
-    background: var(--primary-gradient);
-    opacity: 0;
-    transition: var(--transition);
-    z-index: -1;
-}
-
-.value-control:focus-within {
-    border-color: transparent;
-    background: white;
-    box-shadow: 
-        0 0 0 4px rgba(236, 72, 153, 0.1),
-        0 8px 30px rgba(236, 72, 153, 0.06);
-}
-
-.value-control:focus-within::before {
-    opacity: 0.3;
-}
-
-/* ===== BOTÕES DE VALOR ===== */
-.value-btn {
-    width: 48px;
-    height: 48px;
-    border: none;
-    border-radius: var(--radius-sm);
-    background: transparent;
-    color: var(--text-muted);
-    cursor: pointer;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    font-size: 20px;
-    font-weight: 300;
-}
-
-/* Fundo sutil ao passar o mouse */
-.value-btn::before {
-    content: '';
-    position: absolute;
-    inset: 4px;
-    border-radius: var(--radius-xs);
-    background: var(--primary-gradient);
-    opacity: 0;
-    transition: var(--transition);
-}
-
-.value-btn:hover {
-    color: var(--primary);
-    transform: scale(1.05);
-}
-
-.value-btn:hover::before {
-    opacity: 0.08;
-}
-
-.value-btn:active {
-    transform: scale(0.92);
-}
-
-.value-btn:active::before {
-    opacity: 0.15;
-}
-
-/* Ícones SVG nos botões */
-.value-btn svg {
-    position: relative;
-    z-index: 1;
-    transition: var(--transition);
-}
-
-.value-btn:hover svg {
-    stroke: var(--primary);
-}
-
-/* ===== DISPLAY DO VALOR ===== */
-.value-display {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    padding: 8px 12px;
-    background: rgba(255, 255, 255, 0.5);
-    border-radius: var(--radius-sm);
-    min-height: 52px;
-    position: relative;
-    transition: var(--transition);
-}
-
-.value-control:focus-within .value-display {
-    background: rgba(255, 255, 255, 0.8);
-}
-
-/* Moeda */
-.currency {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--text-secondary);
-    transition: var(--transition);
-}
-
-.value-control:focus-within .currency {
-    color: var(--primary);
-}
-
-/* Input do valor */
-.value-input {
-    width: 80px;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: var(--text-primary);
-    font-size: 28px;
-    font-weight: 700;
-    text-align: center;
-    font-family: var(--font);
-    padding: 4px 0;
-    transition: var(--transition);
-    letter-spacing: -0.5px;
-}
-
-.value-input:focus {
-    color: var(--primary);
-}
-
-/* Remove as setas do input number */
-.value-input::-webkit-inner-spin-button,
-.value-input::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-.value-input[type="number"] {
-    -moz-appearance: textfield;
-}
-
-/* Linha animada abaixo do valor */
-.value-display::after {
-    content: '';
-    position: absolute;
-    bottom: 8px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 2px;
-    background: var(--primary-gradient);
-    border-radius: 2px;
-    transition: var(--transition);
-}
-
-.value-control:focus-within .value-display::after {
-    width: 60%;
-}
-
-/* ============================================
-   VALORES RÁPIDOS - VERSÃO PREMIUM
-   ============================================ */
-.quick-values {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-top: 8px;
-}
-
-.quick-value {
-    flex: 1;
-    min-width: 52px;
-    padding: 10px 0;
-    border: 2px solid var(--border-input);
-    border-radius: var(--radius-sm);
-    background: transparent;
-    color: var(--text-secondary);
-    font-size: 13px;
-    font-weight: 600;
-    font-family: var(--font);
-    cursor: pointer;
-    transition: var(--transition);
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-}
-
-/* Efeito de fundo gradiente nos valores rápidos */
-.quick-value::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--primary-gradient);
-    opacity: 0;
-    transition: var(--transition);
-    border-radius: var(--radius-sm);
-}
-
-.quick-value:hover {
-    border-color: var(--primary-light);
-    color: var(--text-primary);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(236, 72, 153, 0.08);
-}
-
-.quick-value:hover::before {
-    opacity: 0.04;
-}
-
-.quick-value:active {
-    transform: scale(0.95);
-}
-
-.quick-value.active {
-    border-color: var(--primary);
-    color: var(--primary);
-    background: var(--primary-lighter);
-    box-shadow: 0 4px 20px rgba(236, 72, 153, 0.12);
-    transform: translateY(-2px);
-}
-
-.quick-value.active::before {
-    opacity: 0.06;
-}
-
-/* Efeito de "pulse" no valor ativo */
-.quick-value.active::after {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    border-radius: var(--radius-sm);
-    background: var(--primary-gradient);
-    opacity: 0.15;
-    z-index: -1;
-    animation: pulseBorder 2s ease-in-out infinite;
-}
-
-@keyframes pulseBorder {
-    0%, 100% { opacity: 0.15; transform: scale(1); }
-    50% { opacity: 0.3; transform: scale(1.02); }
-}
-
-/* ============================================
-   VARIAÇÃO PARA MOBILE
-   ============================================ */
-@media (max-width: 500px) {
-    .value-btn {
-        width: 44px;
-        height: 44px;
-    }
-
-    .value-btn svg {
-        width: 18px;
-        height: 18px;
-    }
-
-    .value-display {
-        padding: 6px 10px;
-        min-height: 46px;
-    }
-
-    .value-input {
-        font-size: 24px;
-        width: 60px;
-    }
-
-    .currency {
-        font-size: 16px;
-    }
-
-    .quick-value {
-        padding: 8px 0;
-        font-size: 12px;
-        min-width: 44px;
-    }
-}
-
-@media (max-width: 380px) {
     .value-control {
         padding: 4px;
         gap: 2px;
@@ -1672,138 +1929,50 @@ input {
     .quick-values {
         gap: 5px;
     }
-}
 
-/* ============================================
-   ANIMAÇÃO DE ENTRADA PARA O CONTROLE
-   ============================================ */
-.value-control {
-    animation: valueControlIn 0.4s ease;
-}
-
-@keyframes valueControlIn {
-    from {
-        opacity: 0;
-        transform: scale(0.96) translateY(4px);
+    .qr-container .qr-code canvas,
+    .qr-container .qr-code img {
+        width: 130px !important;
+        height: 130px !important;
+        padding: 10px;
     }
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
+
+    .donor-number {
+        font-size: 18px;
     }
 }
 
 /* ============================================
-   TEMA ESCURO (SUPORTE FUTURO)
+   UTILITÁRIOS
    ============================================ */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --bg-input: rgba(255, 255, 255, 0.05);
-        --border-input: rgba(255, 255, 255, 0.1);
-        --text-primary: #ffffff;
-        --text-secondary: rgba(255, 255, 255, 0.7);
-        --text-muted: rgba(255, 255, 255, 0.4);
-    }
-
-    .value-display {
-        background: rgba(255, 255, 255, 0.05);
-    }
-
-    .value-control:focus-within .value-display {
-        background: rgba(255, 255, 255, 0.08);
-    }
-
-    .quick-value.active {
-        background: rgba(236, 72, 153, 0.15);
-    }
+::-webkit-scrollbar {
+    width: 5px;
 }
 
-
-
-
-
-
-/* ============================================
-   AVATAR NEON - SEM BADGE
-   ============================================ */
-.profile-avatar {
-    position: relative;
-    display: inline-block;
-    padding: 4px;
-    border-radius: 50%;
+::-webkit-scrollbar-track {
     background: transparent;
-    box-shadow: 
-        0 0 30px rgba(236, 72, 153, 0.2),
-        inset 0 0 30px rgba(236, 72, 153, 0.05);
-    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.profile-avatar::before {
-    content: '';
-    position: absolute;
-    inset: -3px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #ec4899, #f472b6, #8b5cf6, #ec4899);
-    background-size: 400% 400%;
-    animation: gradientRotate 3s ease-in-out infinite;
-    z-index: -1;
-    filter: blur(15px);
-    opacity: 0.4;
-    transition: opacity 0.4s ease;
+::-webkit-scrollbar-thumb {
+    background: var(--primary-light);
+    border-radius: 10px;
+    transition: background 0.3s ease;
 }
 
-.profile-avatar::after {
-    content: '';
-    position: absolute;
-    inset: -3px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #ec4899, #f472b6, #8b5cf6, #ec4899);
-    background-size: 400% 400%;
-    animation: gradientRotate 3s ease-in-out infinite reverse;
-    z-index: -1;
-    opacity: 0.8;
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
 }
 
-.profile-avatar:hover {
-    transform: scale(1.05);
+::selection {
+    background: var(--primary-light);
+    color: var(--text-white);
 }
 
-.profile-avatar:hover::before {
-    opacity: 0.8;
-    filter: blur(25px);
+:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
 }
 
-.profile-avatar img {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid white;
-    display: block;
-    position: relative;
-    z-index: 1;
-    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.profile-avatar:hover img {
-    transform: scale(1.02);
-}
-
-@keyframes gradientRotate {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-@media (max-width: 500px) {
-    .profile-avatar img {
-        width: 90px;
-        height: 90px;
-    }
-}
-
-@media (max-width: 380px) {
-    .profile-avatar img {
-        width: 75px;
-        height: 75px;
-    }
+input {
+    font-size: 16px !important;
 }
