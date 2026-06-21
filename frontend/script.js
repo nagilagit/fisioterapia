@@ -23,9 +23,13 @@ const ttsConfig = {
     voice: null
 };
 
+// ============================================
+// FUNÇÕES TTS - LEITURA DE DOAÇÕES
+// ============================================
 function initTTSVoices() {
     if (!('speechSynthesis' in window)) {
         ttsEnabled = false;
+        console.warn('⚠️ TTS não suportado neste navegador');
         return;
     }
 
@@ -46,6 +50,7 @@ function initTTSVoices() {
         
         if (portugueseVoice) {
             ttsConfig.voice = portugueseVoice;
+            console.log('✅ Voz TTS configurada:', portugueseVoice.name);
         } else {
             ttsConfig.voice = voices[0] || null;
         }
@@ -64,7 +69,7 @@ function processMessageQueue() {
     const nextMessage = messageQueue.shift();
     isSpeaking = true;
 
-    const { nome, mensagem, valor, metodo } = nextMessage;
+    const { nome, mensagem, valor, metodo, origem } = nextMessage;
     const valorFormatado = metodo === 'PIX' ? `R$${valor.toFixed(2)}` : `US$${valor.toFixed(2)}`;
     
     const frasesInicio = [
@@ -72,7 +77,8 @@ function processMessageQueue() {
         `Recebemos uma doação!`,
         `Olha só!`,
         `Agora agora...`,
-        `Temos uma nova doação!`
+        `Temos uma nova doação!`,
+        `Acabou de chegar uma doação!`
     ];
     
     const frasesAgradecimento = [
@@ -80,7 +86,8 @@ function processMessageQueue() {
         `Agradeço demais`,
         `Que incrível`,
         `Fico muito feliz`,
-        `Que gesto lindo`
+        `Que gesto lindo`,
+        `Você é demais`
     ];
     
     const randomInicio = frasesInicio[Math.floor(Math.random() * frasesInicio.length)];
@@ -97,6 +104,15 @@ function processMessageQueue() {
     if (donorCount > 0 && donorCount % 5 === 0) {
         texto += ` Já são ${donorCount} doações!`;
     }
+    
+    // Diferencia doação externa
+    if (origem === 'externa') {
+        texto += ` Recebida via página de doações!`;
+    }
+
+    if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+    }
 
     currentUtterance = new SpeechSynthesisUtterance(texto);
     currentUtterance.lang = 'pt-BR';
@@ -111,7 +127,7 @@ function processMessageQueue() {
     currentUtterance.onend = () => {
         isSpeaking = false;
         currentUtterance = null;
-        setTimeout(() => processMessageQueue(), 100);
+        setTimeout(() => processMessageQueue(), 150);
     };
 
     currentUtterance.onerror = () => {
@@ -129,17 +145,22 @@ function processMessageQueue() {
     }
 }
 
-function speakDonationMessage(nome, mensagem, valor, metodo) {
+function speakDonationMessage(nome, mensagem, valor, metodo, origem = 'interna') {
     if (!ttsEnabled) return;
+
+    if (messageQueue.length > 20) {
+        messageQueue = messageQueue.slice(-10);
+    }
 
     messageQueue.push({ 
         nome: nome || 'Anônimo', 
         mensagem: mensagem || '', 
         valor: valor || 0, 
-        metodo: metodo || 'PIX' 
+        metodo: metodo || 'PIX',
+        origem: origem || 'interna'
     });
     
-    processMessageQueue();
+    setTimeout(() => processMessageQueue(), 100);
 }
 
 function speakCustomMessage(texto) {
@@ -155,10 +176,11 @@ function speakCustomMessage(texto) {
         nome: 'Sistema', 
         mensagem: texto, 
         valor: 0, 
-        metodo: 'SISTEMA' 
+        metodo: 'SISTEMA',
+        origem: 'sistema'
     });
     
-    processMessageQueue();
+    setTimeout(() => processMessageQueue(), 100);
 }
 
 function toggleTTS() {
@@ -178,6 +200,9 @@ function toggleTTS() {
     localStorage.setItem('ttsEnabled', ttsEnabled);
 }
 
+// ============================================
+// WEBSOCKET
+// ============================================
 function connectWebSocket() {
     socket = io(BACKEND_URL, {
         transports: ['websocket'],
@@ -196,12 +221,20 @@ function connectWebSocket() {
     socket.on('nova-doacao', (doacao) => {
         donorCount = doacao.donorCount;
         updateDonorCounter();
-        showDonationAlert(doacao.nome, doacao.valor, doacao.metodo, doacao.mensagem);
-        speakDonationMessage(doacao.nome, doacao.mensagem, doacao.valor, doacao.metodo);
+        
+        // Determina origem
+        const origem = doacao.origem || 'interna';
+        
+        showDonationAlert(doacao.nome, doacao.valor, doacao.metodo, doacao.mensagem, origem);
+        speakDonationMessage(doacao.nome, doacao.mensagem, doacao.valor, doacao.metodo, origem);
         
         if (donorCount % 10 === 0) {
             showConfetti();
             speakCustomMessage(`Uau! ${donorCount} doações! Muito obrigada a todos!`);
+        }
+        
+        if (origem === 'externa') {
+            addSystemMessage(`💙 Doação externa: ${doacao.nome} doou R$ ${doacao.valor}`);
         }
     });
     
@@ -222,11 +255,17 @@ function updateDonorCounter() {
     }
 }
 
-function showDonationAlert(nome, valor, metodo, mensagem = '') {
+function showDonationAlert(nome, valor, metodo, mensagem = '', origem = 'interna') {
     const alerta = document.createElement('div');
     alerta.className = 'donation-alert';
     const metodoIcon = metodo === 'PIX' ? '💚' : '💙';
     const metodoNome = metodo === 'PIX' ? 'PIX' : 'PayPal';
+    
+    const corFundo = origem === 'externa' 
+        ? 'linear-gradient(135deg, #8b5cf6, #ec4899)' 
+        : 'linear-gradient(135deg, #ff69b4, #ff1493)';
+    
+    alerta.style.background = corFundo;
     
     let mensagemHtml = '';
     if (mensagem && mensagem.trim() !== '') {
@@ -243,13 +282,19 @@ function showDonationAlert(nome, valor, metodo, mensagem = '') {
     ];
     const randomFrase = frasesExtra[Math.floor(Math.random() * frasesExtra.length)];
     
+    const origemTag = origem === 'externa' 
+        ? '<span style="font-size:10px; background:rgba(255,255,255,0.2); padding:2px 10px; border-radius:20px; margin-left:8px;">🌐 externa</span>' 
+        : '';
+    
     alerta.innerHTML = `
         <div class="donation-content">
             <span class="heart-icon">${metodoIcon}</span>
             <div style="flex:1; min-width:0;">
-                <div class="donor-name" style="font-size: 16px;">🌟 ${escapeHtml(nome)}</div>
+                <div class="donor-name" style="font-size: 16px;">
+                    🌟 ${escapeHtml(nome)} ${origemTag}
+                </div>
                 <div class="donation-amount" style="font-size: 15px; margin: 4px 0;">
-                    doou <strong>${metodo === 'PIX' ? 'R$' : 'US$'} ${valor.toFixed(2)}</strong>  ${metodoNome}
+                    doou <strong>${metodo === 'PIX' ? 'R$' : 'US$'} ${valor.toFixed(2)}</strong> ${metodoNome}
                 </div>
                 ${mensagemHtml}
                 <div style="font-size: 13px; margin-top: 4px; color: #ffd700;">
@@ -265,7 +310,12 @@ function showDonationAlert(nome, valor, metodo, mensagem = '') {
     document.body.appendChild(alerta);
     
     setTimeout(() => {
-        if (alerta && alerta.remove) alerta.remove();
+        if (alerta && alerta.parentNode) {
+            alerta.style.animation = 'fadeOut 0.5s ease forwards';
+            setTimeout(() => {
+                if (alerta.parentNode) alerta.remove();
+            }, 500);
+        }
     }, 8000);
 }
 
@@ -278,7 +328,7 @@ function showConfetti() {
             top: -20px;
             width: 8px;
             height: 8px;
-            background: ${['#ff69b4', '#ff1493', '#ff0000', '#ffa500', '#ffff00'][Math.floor(Math.random() * 5)]};
+            background: ${['#ff69b4', '#ff1493', '#ff0000', '#ffa500', '#ffff00', '#8b5cf6', '#10b981'][Math.floor(Math.random() * 7)]};
             border-radius: ${Math.random() > 0.5 ? '50%' : '0'};
             animation: fall ${Math.random() * 3 + 2}s linear forwards;
             z-index: 9999;
@@ -292,10 +342,12 @@ function showConfetti() {
 function addSystemMessage(msg) {
     const alerta = document.createElement('div');
     alerta.className = 'donation-alert';
-    alerta.style.background = 'linear-gradient(135deg, #ffa500, #ff6347)';
+    alerta.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
     alerta.innerHTML = `<div class="donation-content">${msg}</div>`;
     document.body.appendChild(alerta);
-    setTimeout(() => alerta.remove(), 4000);
+    setTimeout(() => {
+        if (alerta.parentNode) alerta.remove();
+    }, 4000);
 }
 
 function toggleMode() {
@@ -337,6 +389,9 @@ function setupLikeButton() {
     }
 }
 
+// ============================================
+// MODAIS - PIX
+// ============================================
 function showPixModal() {
     const modal = document.getElementById('pixModal');
     if (modal) modal.style.display = 'flex';
@@ -381,15 +436,11 @@ async function gerarPix() {
     const statusEl = document.getElementById('pixStatus');
     const qrcodeDiv = document.getElementById('qrcode');
     const copyQRBtn = document.getElementById('copyQRBtn');
-    const pixKeyBox = document.querySelector('.key-box');
     
     const valor = parseFloat(valorInput.value);
     const nome = nomeInput?.value.trim() || 'Anonimo';
     const mensagem = mensagemInput?.value.trim() || '';
     
-    // ============================================
-    // VALIDAÇÃO DE TAMANHO DOS CAMPOS
-    // ============================================
     if (nome.length > MAX_NAME_LENGTH) {
         statusEl.textContent = `❌ Nome excede ${MAX_NAME_LENGTH} caracteres (${nome.length}/${MAX_NAME_LENGTH})`;
         statusEl.style.color = "#ff4444";
@@ -435,11 +486,6 @@ async function gerarPix() {
                 copyQRBtn.removeEventListener('click', copyQRCodeHandler);
                 copyQRBtn.addEventListener('click', copyQRCodeHandler);
                 copyQRBtn.pixCode = data.qr_code;
-            }
-            
-            if (pixKeyBox) {
-                pixKeyBox.textContent = data.qr_code;
-                pixKeyBox.setAttribute('data-pix-code', data.qr_code);
             }
             
             statusEl.innerHTML = `✨ QR Code gerado! ✨<br>📱 Escaneie com o app do seu banco ou <strong>copie o código PIX abaixo</strong>`;
@@ -513,6 +559,9 @@ async function verificarPagamento(paymentId) {
     }
 }
 
+// ============================================
+// MODAIS - PAYPAL
+// ============================================
 function showPaypalModal() {
     const modal = document.getElementById('paypalModal');
     if (modal) modal.style.display = 'flex';
@@ -560,6 +609,9 @@ function updatePaypalAmount() {
     }
 }
 
+// ============================================
+// MODAIS - VÍDEOS
+// ============================================
 function showVideosModal() {
     const modalContainer = document.getElementById("videosModalContainer");
     if (modalContainer) modalContainer.style.display = "block";
@@ -586,6 +638,9 @@ function loadVideos() {
     });
 }
 
+// ============================================
+// MODAIS - JORNADA
+// ============================================
 function showJourneyModal() {
     const modal = document.getElementById("journeyModal");
     if (modal) modal.style.display = 'flex';
@@ -598,6 +653,9 @@ function hideJourneyModal() {
     document.body.style.overflow = 'auto';
 }
 
+// ============================================
+// MODAIS - RANKING
+// ============================================
 function showRankingModal() {
     const modal = document.getElementById("rankingModal");
     if (modal) modal.style.display = 'flex';
@@ -643,6 +701,9 @@ async function loadRanking() {
     }
 }
 
+// ============================================
+// TRADUÇÃO
+// ============================================
 const translationsData = {
     portuguese: {
         bio: "Streamer • Fisioterapeuta • Criadora de Conteúdo",
@@ -677,7 +738,6 @@ function translatePage(lang) {
     const activeBtn = lang === 'english' ? 'englishBtn' : 'portugueseBtn';
     document.getElementById(activeBtn).classList.add('active');
     
-    // Dicionário de traduções
     const translations = {
         portuguese: {
             bio: "Streamer • Fisioterapeuta • Criadora de Conteúdo",
@@ -733,7 +793,6 @@ function translatePage(lang) {
     
     const t = translations[lang];
     
-    // Traduz elementos com data-translate
     document.querySelectorAll('[data-translate]').forEach(element => {
         const key = element.getAttribute('data-translate');
         if (t[key] !== undefined) {
@@ -747,7 +806,6 @@ function translatePage(lang) {
         }
     });
     
-    // Traduz especificamente os botões de suporte
     const supportBtnPT = document.getElementById('supportButtonPT');
     const supportBtnEN = document.getElementById('supportButtonEN');
     if (supportBtnPT && supportBtnEN) {
@@ -756,7 +814,6 @@ function translatePage(lang) {
         supportBtnEN.textContent = supportText;
     }
     
-    // Atualiza os modais
     const pixTitle = document.getElementById('pixModalTitle');
     const pixDesc = document.getElementById('pixModalDesc');
     if (pixTitle) pixTitle.textContent = t.pixModalTitle;
@@ -773,7 +830,6 @@ function translatePage(lang) {
     }
     if (paypalNote) paypalNote.textContent = t.paypalNote;
     
-    // Atualiza o modal de vídeos
     const videosTitle = document.querySelector('#videosModal h3');
     if (videosTitle) {
         const closeBtn = videosTitle.querySelector('button');
@@ -781,17 +837,14 @@ function translatePage(lang) {
         if (closeBtn) videosTitle.appendChild(closeBtn);
     }
     
-    // Atualiza o modal de jornada
     const journeyTitle = document.querySelector('#journeyModal h3');
     if (journeyTitle) journeyTitle.textContent = t.journeyTitle;
     
-    // Atualiza o modal de ranking
     const rankingTitle = document.querySelector('#rankingModal h3');
     const rankingLoading = document.querySelector('#rankingModal [data-translate="rankingLoading"]');
     if (rankingTitle) rankingTitle.textContent = t.rankingTitle;
     if (rankingLoading) rankingLoading.textContent = t.rankingLoading;
     
-    // Salva a preferência
     localStorage.setItem('preferredLanguage', lang);
 }
 
@@ -828,16 +881,14 @@ function copyToClipboard(text) {
 }
 
 // ============================================
-// CONTADOR DE CARACTERES PARA INPUTS
+// CONTADOR DE CARACTERES
 // ============================================
-
 function setupCharCounter(inputId, counterId, maxLength) {
     const input = document.getElementById(inputId);
     const counter = document.getElementById(counterId);
     
     if (!input || !counter) return;
     
-    // Força a cor do texto para branco
     input.style.color = '#ffffff';
     
     function updateCounter() {
@@ -845,11 +896,8 @@ function setupCharCounter(inputId, counterId, maxLength) {
         const remaining = maxLength - currentLength;
         
         counter.textContent = `${currentLength}/${maxLength}`;
-        
-        // Remove classes anteriores
         counter.classList.remove('warning', 'danger');
         
-        // Adiciona classes baseado no uso
         if (remaining <= 10) {
             counter.classList.add('warning');
         }
@@ -857,7 +905,6 @@ function setupCharCounter(inputId, counterId, maxLength) {
             counter.classList.add('danger');
         }
         
-        // Aplica estilo visual no input
         if (remaining <= 3) {
             input.style.borderColor = '#ef4444';
             input.style.boxShadow = '0 0 20px rgba(239, 68, 68, 0.15)';
@@ -870,23 +917,20 @@ function setupCharCounter(inputId, counterId, maxLength) {
         }
     }
     
-    // Atualiza ao digitar
     input.addEventListener('input', updateCounter);
-    
-    // Atualiza ao colar conteúdo
     input.addEventListener('paste', () => {
         setTimeout(updateCounter, 10);
     });
     
-    // Inicializa
     updateCounter();
 }
 
 // ============================================
 // EVENTO PRINCIPAL - DOM CARREGADO
 // ============================================
-
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('🚀 Página principal carregada!');
+    
     setupLikeButton();
     loadSavedLanguage();
     connectWebSocket();
@@ -902,9 +946,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // ============================================
-    // CONFIGURAR CONTADORES DE CARACTERES
-    // ============================================
     setupCharCounter('pixDonorName', 'nameCounter', MAX_NAME_LENGTH);
     setupCharCounter('pixDonorMessage', 'messageCounter', MAX_MESSAGE_LENGTH);
     setupCharCounter('paypalDonorName', 'paypalNameCounter', MAX_NAME_LENGTH);
@@ -959,9 +1000,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const mensagem = paypalMessageInput?.value.trim() || '';
             const valor = parseFloat(paypalValueInput?.value) || 10;
             
-            // ============================================
-            // VALIDAÇÃO DE TAMANHO - PAYPAL
-            // ============================================
             if (nome.length > MAX_NAME_LENGTH) {
                 e.preventDefault();
                 alert(`❌ Nome excede ${MAX_NAME_LENGTH} caracteres (${nome.length}/${MAX_NAME_LENGTH})`);
@@ -996,3 +1034,58 @@ const englishBtn = document.getElementById('englishBtn');
 const portugueseBtn = document.getElementById('portugueseBtn');
 if (englishBtn) englishBtn.addEventListener('click', () => translatePage('english'));
 if (portugueseBtn) portugueseBtn.addEventListener('click', () => translatePage('portuguese'));
+
+// ============================================
+// INJEÇÃO DE ESTILOS PARA ANIMAÇÕES
+// ============================================
+const styleInject = document.createElement('style');
+styleInject.textContent = `
+    @keyframes fall {
+        0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+        100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+    }
+    @keyframes fadeOut {
+        to { opacity: 0; visibility: hidden; transform: scale(0.9); }
+    }
+    .donation-alert {
+        position: fixed;
+        bottom: 30px;
+        right: 20px;
+        color: white;
+        padding: 20px 25px;
+        border-radius: 60px;
+        animation: slideInRight 0.4s ease;
+        z-index: 10000;
+        box-shadow: 0 8px 30px rgba(255, 20, 147, 0.5);
+        font-weight: bold;
+        max-width: 400px;
+        min-width: 280px;
+    }
+    @keyframes slideInRight {
+        from { transform: translateX(120%) scale(0.8); opacity: 0; }
+        to { transform: translateX(0) scale(1); opacity: 1; }
+    }
+    .donation-content {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .heart-icon {
+        font-size: 28px;
+        animation: heartBeat 0.6s ease infinite;
+    }
+    @keyframes heartBeat {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.3); }
+    }
+    .donor-name { font-weight: 800; text-transform: uppercase; letter-spacing: 1px; font-size: 16px; }
+    .donation-amount { background: rgba(255,255,255,0.2); padding: 4px 14px; border-radius: 40px; font-size: 15px; display: inline-block; }
+    .donation-message { font-size: 14px; font-style: italic; background: rgba(255,255,255,0.15); padding: 8px 14px; border-radius: 20px; margin-top: 8px; max-width: 300px; word-wrap: break-word; font-weight: normal; letter-spacing: normal; text-transform: none; }
+    @media (max-width: 600px) {
+        .donation-alert { left: 20px; right: 20px; max-width: calc(100% - 40px); padding: 12px 18px; }
+        .donation-content { gap: 8px; font-size: 14px; }
+        .donation-message { font-size: 12px; max-width: 200px; }
+    }
+`;
+document.head.appendChild(styleInject);
